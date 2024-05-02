@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "vulkan/common.h"
-#include "vulkan/instance.h"
+#include "vulkan/instance/instance.h"
 
 #include <vk_mem_alloc.h>
 

@@ -1,11 +1,12 @@
 #include "instance.h"
-#include "common.h"
 
 #ifdef BUILD_MODE_DEBUG
 #include "debug.h"
 #endif
 
-#include "../util/string_list.h"
+#include "../common.h"
+
+#include "../../util/string_list.h"
 
 #include <stdint.h>
 
