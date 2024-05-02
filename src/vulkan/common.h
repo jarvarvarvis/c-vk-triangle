@@ -1,11 +1,11 @@
 #ifndef VKT_VULKAN_COMMON_H
 #define VKT_VULKAN_COMMON_H
 
+#include "../util/concat.h"
+
 #include <vulkan/vk_enum_string_helper.h>
 
 #include <c_log/c_log.h>
-
-#include "../util/concat.h"
 
 #define VKT_GENERIC_SUCCESS 0
 #define VKT_GENERIC_FAILURE 1
