@@ -3,6 +3,8 @@
 
 #include "lib/lib_impls.h"
 
+#include <vk_mem_alloc.h>
+
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
 

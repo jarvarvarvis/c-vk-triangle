@@ -9,6 +9,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
+# Set C++ standard for VMA
+set(CMAKE_CXX_STANDARD 11)
+
 # Find base dependencies (Vulkan)
 find_package(Vulkan REQUIRED)
 
