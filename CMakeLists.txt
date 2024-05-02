@@ -12,6 +12,17 @@ endif()
 # Find base dependencies (Vulkan)
 find_package(Vulkan REQUIRED)
 
+# VulkanMemoryAllocator
+set(VMA_PROJ_PATH "${CMAKE_SOURCE_DIR}/thirdparty/VulkanMemoryAllocator")
+
+# Set options for VMA building (disable all stuff not strictly necessary)
+option(VMA_BUILD_DOCUMENTATION OFF)
+option(VMA_BUILD_SAMPLES OFF)
+
+add_subdirectory(${VMA_PROJ_PATH})
+
+set(VMA_INCLUDE_DIRS ${VMA_PROJ_PATH}/include)
+
 # GLFW
 set(GLFW_PROJ_PATH "${CMAKE_SOURCE_DIR}/thirdparty/glfw")
 
@@ -30,6 +41,7 @@ set(GLFW_INCLUDE_DIRS ${GLFW_PROJ_PATH}/include)
 # Configure include directories for main executable
 set(INCLUDE_DIRS ${INCLUDE_DIRS}
     ${VULKAN_INCLUDE_DIRS}
+    ${VMA_INCLUDE_DIRS}
     ${GLFW_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/thirdparty
 )
@@ -53,6 +65,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
 # Set linked libraries
 set(LIBS ${LIBS}
     vulkan
+    GPUOpen::VulkanMemoryAllocator
     glfw
     m
 )
