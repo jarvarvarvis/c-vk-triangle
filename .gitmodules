@@ -1,0 +1,9 @@
+[submodule "thirdparty/glfw"]
+	path = thirdparty/glfw
+	url = https://github.com/glfw/glfw
+[submodule "thirdparty/c_log"]
+	path = thirdparty/c_log
+	url = https://github.com/jarvarvarvis/c_log
+[submodule "thirdparty/linmath.h"]
+	path = thirdparty/linmath.h
+	url = https://github.com/datenwolf/linmath.h
