@@ -1,7 +1,10 @@
+#include "lib/lib_impls.h"
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "lib/lib_impls.h"
+#include "vulkan/common.h"
+#include "vulkan/instance.h"
 
 #include <vk_mem_alloc.h>
 
@@ -23,10 +26,20 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    // Create instance
+    VktVulkanInstance instance;
+    if (vkt_create_vulkan_instance(&instance, window) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create Vulkan instance!");
+        return EXIT_FAILURE;
+    }
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
     }
+
+    // Clean up
+    vkt_delete_vulkan_instance(&instance);
 
     glfwDestroyWindow(window);
     glfwTerminate();
