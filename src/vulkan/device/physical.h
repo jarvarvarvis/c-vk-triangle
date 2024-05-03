@@ -1,8 +1,6 @@
 #ifndef VKT_VULKAN_DEVICE_PHYSICAL_H
 #define VKT_VULKAN_DEVICE_PHYSICAL_H
 
-#include <vulkan/vulkan.h>
-
 #include "../instance/instance.h"
 
 typedef struct {

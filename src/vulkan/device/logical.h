@@ -2,7 +2,6 @@
 #define VKT_VULKAN_DEVICE_LOGICAL_H
 
 #include "physical.h"
-#include <vulkan/vulkan_core.h>
 
 typedef struct {
     VkDevice vk_device;

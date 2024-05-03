@@ -3,13 +3,11 @@
 
 #include <vulkan/vulkan.h>
 
-#include <c_log/c_log.h>
-
-VkResult vkt_debug_make_messenger(
+VkResult vkt_create_debug_messenger(
     VkInstance instance,
 	VkDebugUtilsMessengerEXT *debug_messenger
 );
-VkResult vkt_debug_destroy_messenger(
+VkResult vkt_destroy_debug_messenger(
     VkInstance instance,
 	VkDebugUtilsMessengerEXT debug_messenger
 );

@@ -94,7 +94,7 @@ int vkt_create_vulkan_instance(VktVulkanInstance *instance, char *app_name) {
 
     // Create debug messenger
 #ifdef BUILD_MODE_DEBUG
-    int vk_create_messenger_result = vkt_debug_make_messenger(instance->vk_instance, &instance->debug_messenger);
+    int vk_create_messenger_result = vkt_create_debug_messenger(instance->vk_instance, &instance->debug_messenger);
     VKT_CHECK(vk_create_messenger_result);
 #endif
 
@@ -104,7 +104,7 @@ int vkt_create_vulkan_instance(VktVulkanInstance *instance, char *app_name) {
 void vkt_destroy_vulkan_instance(VktVulkanInstance *instance) {
     // Destroy debug messenger before instance
 #ifdef BUILD_MODE_DEBUG
-    vkt_debug_destroy_messenger(instance->vk_instance, instance->debug_messenger);
+    vkt_destroy_debug_messenger(instance->vk_instance, instance->debug_messenger);
 #endif
 
     vkDestroyInstance(instance->vk_instance, NULL);

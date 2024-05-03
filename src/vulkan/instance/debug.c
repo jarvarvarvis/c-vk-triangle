@@ -1,5 +1,7 @@
 #include "debug.h"
 
+#include <c_log/c_log.h>
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL vkt_debug_callback(
     VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
     VkDebugUtilsMessageTypeFlagsEXT message_type,
@@ -30,7 +32,7 @@ VkDebugUtilsMessengerCreateInfoEXT vkt_debug_make_basic_messenger_create_info() 
     return create_info;
 }
 
-VkResult vkt_debug_make_messenger(
+VkResult vkt_create_debug_messenger(
     VkInstance instance,
 	VkDebugUtilsMessengerEXT *debug_messenger
 ) {
@@ -46,7 +48,7 @@ VkResult vkt_debug_make_messenger(
     return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
-VkResult vkt_debug_destroy_messenger(
+VkResult vkt_destroy_debug_messenger(
     VkInstance instance,
 	VkDebugUtilsMessengerEXT debug_messenger
 ) {

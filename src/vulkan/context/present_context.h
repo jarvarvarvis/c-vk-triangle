@@ -1,12 +1,12 @@
 #ifndef VKT_VULKAN_PRESENT_CONTEXT_H
 #define VKT_VULKAN_PRESENT_CONTEXT_H
 
-#include "context.h"
-
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <vulkan/vulkan.h>
+
+#include "context.h"
 
 typedef struct {
     VkSurfaceKHR surface;
