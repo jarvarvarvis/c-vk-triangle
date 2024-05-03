@@ -42,8 +42,8 @@ VkInstanceCreateInfo vkt_create_instance_create_info(VkApplicationInfo *app_info
     inst_create_info.pApplicationInfo = app_info;
 
     // Enable layers specified in VKT_ENABLED_LAYER_NAMES
-    inst_create_info.enabledLayerCount = sizeof(VKT_ENABLED_LAYER_NAMES) / sizeof(char *);
-    inst_create_info.ppEnabledLayerNames = VKT_ENABLED_LAYER_NAMES;
+    inst_create_info.enabledLayerCount = sizeof(VKT_INSTANCE_ENABLED_LAYER_NAMES) / sizeof(char *);
+    inst_create_info.ppEnabledLayerNames = VKT_INSTANCE_ENABLED_LAYER_NAMES;
 
     // Log enabled extensions
     c_log(C_LOG_SEVERITY_DEBUG, "Enabled Vulkan extensions:");
@@ -78,9 +78,9 @@ int vkt_create_vulkan_instance(VktVulkanInstance *instance, GLFWwindow *window) 
     }
 
     // Add extra extensions to the list
-    size_t extra_extensions_count = sizeof(VKT_EXTRA_ENABLED_EXTENSIONS) / sizeof(char *);
+    size_t extra_extensions_count = sizeof(VKT_INSTANCE_EXTRA_EXTENSION_NAMES) / sizeof(char *);
     for (size_t i = 0; i < extra_extensions_count; ++i) {
-        string_list_push(&extension_list, (char *) VKT_EXTRA_ENABLED_EXTENSIONS[i]);
+        string_list_push(&extension_list, (char *) VKT_INSTANCE_EXTRA_EXTENSION_NAMES[i]);
     }
 
     // Create application info and instance create info

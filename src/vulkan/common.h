@@ -18,19 +18,4 @@
         return VKT_GENERIC_FAILURE; \
     }
 
-
-static const char *const VKT_ENABLED_LAYER_NAMES[] = {
-    // Enable VK_LAYER_KHRONOS_validation in debug build mode
-#ifdef BUILD_MODE_DEBUG
-    "VK_LAYER_KHRONOS_validation"
-#endif
-};
-
-static const char *const VKT_EXTRA_ENABLED_EXTENSIONS[] = {
-    // Enable VK_EXT_debug_utils in debug build mode
-#ifdef BUILD_MODE_DEBUG
-    VK_EXT_DEBUG_UTILS_EXTENSION_NAME
-#endif
-};
-
 #endif /* VKT_VULKAN_COMMON_H */

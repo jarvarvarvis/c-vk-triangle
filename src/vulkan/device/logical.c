@@ -33,9 +33,12 @@ int vkt_create_logical_device(
     device_info.queueCreateInfoCount = 1;
     device_info.pQueueCreateInfos = &queue_info;
 
-    // No extensions
-    device_info.enabledExtensionCount = 0;
-    device_info.ppEnabledExtensionNames = NULL;
+    // Swapchain extension for graphics
+    const char *enabled_extension_names[] = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+    device_info.enabledExtensionCount = sizeof(enabled_extension_names) / sizeof(const char *);
+    device_info.ppEnabledExtensionNames = enabled_extension_names;
 
     // No layers
     device_info.enabledLayerCount = 0;
