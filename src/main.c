@@ -5,6 +5,7 @@
 
 #include "vulkan/common.h"
 #include "vulkan/instance/instance.h"
+#include "vulkan/device/physical.h"
 
 #include <vk_mem_alloc.h>
 
@@ -30,6 +31,15 @@ int main() {
     VktVulkanInstance instance;
     if (vkt_create_vulkan_instance(&instance, window) != VKT_GENERIC_SUCCESS) {
         c_log(C_LOG_SEVERITY_ERROR, "Failed to create Vulkan instance!");
+        return EXIT_FAILURE;
+    }
+
+    // Physical device discovery
+    VktFindPhysicalDeviceResult phys_device_result;
+    VktFindPhysicalDeviceProps find_props;
+    find_props.queue_family_bits = VK_QUEUE_GRAPHICS_BIT;
+    if (vkt_find_physical_device(&instance, find_props, &phys_device_result) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Unable to find physical device!");
         return EXIT_FAILURE;
     }
 

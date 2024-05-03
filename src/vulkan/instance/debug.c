@@ -6,7 +6,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vkt_debug_callback(
 	const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
 	void *user_data
 ) {
-	c_log(C_LOG_SEVERITY_DEBUG, "Debug Message: \n%s\n\n", callback_data->pMessage);
+	c_log(C_LOG_SEVERITY_DEBUG, "Vulkan Validation :: %s", callback_data->pMessage);
 	return VK_FALSE;
 }
 
