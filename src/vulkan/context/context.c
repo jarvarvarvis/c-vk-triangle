@@ -31,14 +31,23 @@ int vkt_create_basic_graphics_context(VktVulkanContext *context, GLFWwindow *win
         return VKT_GENERIC_FAILURE;
     }
 
+    // Create window surface
+    VkSurfaceKHR surface;
+    if (glfwCreateWindowSurface(instance.vk_instance, window, NULL, &surface) != VK_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create window surface!");
+        return VKT_GENERIC_FAILURE;
+    }
+
     context->instance = instance;
     context->phys_device_result = phys_device_result;
     context->logical_device = logical_device;
+    context->surface = surface;
 
     return VKT_GENERIC_SUCCESS;
 }
 
 void vkt_destroy_context(VktVulkanContext *context) {
+    vkDestroySurfaceKHR(context->instance.vk_instance, context->surface, NULL);
     vkt_destroy_logical_device(&context->logical_device);
     vkt_destroy_vulkan_instance(&context->instance);
 }

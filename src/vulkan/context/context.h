@@ -9,6 +9,8 @@ typedef struct {
     VktVulkanInstance instance;
     VktFindPhysicalDeviceResult phys_device_result;
     VktLogicalDevice logical_device;
+
+    VkSurfaceKHR surface;
 } VktVulkanContext;
 
 int vkt_create_basic_graphics_context(VktVulkanContext *context, GLFWwindow *window);
