@@ -38,6 +38,20 @@ int vkt_create_basic_graphics_context(VktVulkanContext *context, GLFWwindow *win
         return VKT_GENERIC_FAILURE;
     }
 
+    // Validate that the physical device supports the surface
+    VkBool32 surface_supported_by_device_and_queue = VK_TRUE;
+    vkGetPhysicalDeviceSurfaceSupportKHR(
+        phys_device_result.physical_device,
+        phys_device_result.queue_family_index,
+        surface,
+        &surface_supported_by_device_and_queue
+    );
+    if (!surface_supported_by_device_and_queue) {
+        c_log(C_LOG_SEVERITY_ERROR, "Window surface created by GLFW not supported by selected physical device and queue!");
+        return VKT_GENERIC_FAILURE;
+    }
+
+    // Populate context struct
     context->instance = instance;
     context->phys_device_result = phys_device_result;
     context->logical_device = logical_device;
