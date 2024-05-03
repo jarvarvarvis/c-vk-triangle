@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 
 #include "vulkan/context/context.h"
+#include "vulkan/command/pool.h"
+#include "vulkan/command/buffer.h"
 #include "vulkan/common.h"
 
 #define WINDOW_WIDTH  800
@@ -31,12 +33,28 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    // Create command pool
+    VkCommandPool test_cmd_pool;
+    if (vkt_create_command_pool(&vk_context, &test_cmd_pool) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create graphics command pool!");
+        return EXIT_FAILURE;
+    }
+
+    // Create test command buffer
+    VkCommandBuffer test_buffer;
+    if (vkt_allocate_primary_command_buffers(&vk_context, test_cmd_pool, &test_buffer, 1) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to allocate test command buffer!");
+        return EXIT_FAILURE;
+    }
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
     }
 
     // Clean up
+    vkt_free_command_buffers(&vk_context, test_cmd_pool, &test_buffer, 1);
+    vkt_destroy_command_pool(&vk_context, test_cmd_pool);
     vkt_destroy_context(&vk_context);
 
     glfwDestroyWindow(window);
