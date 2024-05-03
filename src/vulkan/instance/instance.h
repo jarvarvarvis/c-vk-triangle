@@ -29,7 +29,7 @@ typedef struct {
 #endif
 } VktVulkanInstance;
 
-int vkt_create_vulkan_instance(VktVulkanInstance *instance, GLFWwindow *window);
+int vkt_create_vulkan_instance(VktVulkanInstance *instance, char *app_name);
 void vkt_destroy_vulkan_instance(VktVulkanInstance *instance);
 
 #endif /* VKT_VULKAN_INSTANCE_H */

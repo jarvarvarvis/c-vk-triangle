@@ -7,13 +7,11 @@
 
 typedef struct {
     VktVulkanInstance instance;
-    VktFindPhysicalDeviceResult phys_device_result;
+    VktPhysicalDevice physical_device;
     VktLogicalDevice logical_device;
-
-    VkSurfaceKHR surface;
 } VktVulkanContext;
 
-int vkt_create_basic_graphics_context(VktVulkanContext *context, GLFWwindow *window);
+int vkt_create_basic_graphics_context(VktVulkanContext *context, char *app_name);
 void vkt_destroy_context(VktVulkanContext *context);
 
 #endif /* VKT_VULKAN_CONTEXT_H */

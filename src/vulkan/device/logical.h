@@ -10,7 +10,7 @@ typedef struct {
 
 int vkt_create_logical_device(
     VktLogicalDevice *device,
-    VktFindPhysicalDeviceResult physical_device_result
+    VktPhysicalDevice physical_device
 );
 
 void vkt_destroy_logical_device(VktLogicalDevice *device);

@@ -6,7 +6,7 @@
 
 int vkt_create_logical_device(
     VktLogicalDevice *device,
-    VktFindPhysicalDeviceResult physical_device_result
+    VktPhysicalDevice physical_device
 ) {
     memset(device, 0, sizeof(VktLogicalDevice));
 
@@ -21,7 +21,7 @@ int vkt_create_logical_device(
     float queue_priorities[1] = {0.0};
     queue_info.pQueuePriorities = queue_priorities;
 
-    queue_info.queueFamilyIndex = physical_device_result.queue_family_index;
+    queue_info.queueFamilyIndex = physical_device.queue_family_index;
 
     // Device
     VkDeviceCreateInfo device_info;
@@ -47,7 +47,7 @@ int vkt_create_logical_device(
     device_info.pEnabledFeatures = NULL;
 
     // Create the device
-    VKT_CHECK(vkCreateDevice(physical_device_result.physical_device, &device_info, NULL, &device->vk_device));
+    VKT_CHECK(vkCreateDevice(physical_device.physical_device, &device_info, NULL, &device->vk_device));
     return VKT_GENERIC_SUCCESS;
 }
 

@@ -19,7 +19,7 @@ int vkt_rate_physical_device_type(VkPhysicalDeviceType device_type) {
 int vkt_rate_physical_device(
     VkPhysicalDevice device,
     VktFindPhysicalDeviceProps props,
-    VktPhysicalDeviceRatingResult *result
+    VktPhysicalDeviceRatingResult *physical_device
 ) {
     VkPhysicalDeviceProperties device_props;
     vkGetPhysicalDeviceProperties(device, &device_props);
@@ -40,15 +40,15 @@ int vkt_rate_physical_device(
 
     c_log(C_LOG_SEVERITY_DEBUG, "    - Queue Family Index for requested queues: %d", queue_family_idx);
 
-    result->device = device;
-    result->rating = rating;
-    result->queue_family_index = queue_family_idx;
+    physical_device->device = device;
+    physical_device->rating = rating;
+    physical_device->queue_family_index = queue_family_idx;
 
     return VKT_GENERIC_SUCCESS;
 }
 
-int vkt_find_physical_device(VktVulkanInstance *instance, VktFindPhysicalDeviceProps props, VktFindPhysicalDeviceResult *result) {
-    memset(result, 0, sizeof(VktFindPhysicalDeviceResult));
+int vkt_find_physical_device(VktVulkanInstance *instance, VktFindPhysicalDeviceProps props, VktPhysicalDevice *physical_device) {
+    memset(physical_device, 0, sizeof(VktPhysicalDevice));
 
     // Get number of physical devices
     uint32_t device_count = 0;
@@ -87,7 +87,7 @@ int vkt_find_physical_device(VktVulkanInstance *instance, VktFindPhysicalDeviceP
         return VKT_GENERIC_FAILURE;
     }
 
-    result->physical_device = best_result.device;
-    result->queue_family_index = best_result.queue_family_index;
+    physical_device->physical_device = best_result.device;
+    physical_device->queue_family_index = best_result.queue_family_index;
     return VKT_GENERIC_SUCCESS;
 }

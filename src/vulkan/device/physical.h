@@ -12,8 +12,8 @@ typedef struct {
 typedef struct {
     VkPhysicalDevice physical_device;
     int32_t queue_family_index;
-} VktFindPhysicalDeviceResult;
+} VktPhysicalDevice;
 
-int vkt_find_physical_device(VktVulkanInstance *instance, VktFindPhysicalDeviceProps props, VktFindPhysicalDeviceResult *result);
+int vkt_find_physical_device(VktVulkanInstance *instance, VktFindPhysicalDeviceProps props, VktPhysicalDevice *physical_device);
 
 #endif /* VKT_VULKAN_DEVICE_PHYSICAL_H */

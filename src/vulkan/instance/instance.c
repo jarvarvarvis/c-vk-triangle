@@ -12,14 +12,13 @@
 
 #include <c_log/c_log.h>
 
-VkApplicationInfo vkt_create_basic_application_info(GLFWwindow *window) {
+VkApplicationInfo vkt_create_basic_application_info(char *title) {
     VkApplicationInfo app_info;
     memset(&app_info, 0, sizeof(VkApplicationInfo));
 
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.pNext = NULL;
 
-    const char *title = glfwGetWindowTitle(window);
     app_info.pApplicationName = title;
     app_info.applicationVersion = 0;
     app_info.pEngineName = title;
@@ -59,7 +58,7 @@ VkInstanceCreateInfo vkt_create_instance_create_info(VkApplicationInfo *app_info
     return inst_create_info;
 }
 
-int vkt_create_vulkan_instance(VktVulkanInstance *instance, GLFWwindow *window) {
+int vkt_create_vulkan_instance(VktVulkanInstance *instance, char *app_name) {
     memset(instance, 0, sizeof(VktVulkanInstance));
 
     // Get instance extensions
@@ -84,7 +83,7 @@ int vkt_create_vulkan_instance(VktVulkanInstance *instance, GLFWwindow *window) 
     }
 
     // Create application info and instance create info
-    VkApplicationInfo app_info = vkt_create_basic_application_info(window);
+    VkApplicationInfo app_info = vkt_create_basic_application_info(app_name);
     VkInstanceCreateInfo inst_create_info = vkt_create_instance_create_info(&app_info, &extension_list);
 
     // Create the instance, delete extension list before VKT_CHECK
