@@ -47,7 +47,7 @@ int vkt_create_logical_device(
     device_info.pEnabledFeatures = NULL;
 
     // Create the device
-    VKT_CHECK(vkCreateDevice(physical_device.physical_device, &device_info, NULL, &device->vk_device));
+    VKT_CHECK(vkCreateDevice(physical_device.vk_device, &device_info, NULL, &device->vk_device));
     return VKT_GENERIC_SUCCESS;
 }
 

@@ -10,7 +10,7 @@ typedef struct {
 } VktFindPhysicalDeviceProps;
 
 typedef struct {
-    VkPhysicalDevice physical_device;
+    VkPhysicalDevice vk_device;
     int32_t queue_family_index;
 } VktPhysicalDevice;
 

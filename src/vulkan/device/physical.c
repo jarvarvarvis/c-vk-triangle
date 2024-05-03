@@ -87,7 +87,7 @@ int vkt_find_physical_device(VktVulkanInstance *instance, VktFindPhysicalDeviceP
         return VKT_GENERIC_FAILURE;
     }
 
-    physical_device->physical_device = best_result.device;
+    physical_device->vk_device = best_result.device;
     physical_device->queue_family_index = best_result.queue_family_index;
     return VKT_GENERIC_SUCCESS;
 }

@@ -15,7 +15,7 @@ int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *pre
     // Validate that the physical device supports the surface
     VkBool32 surface_supported_by_device_and_queue = VK_TRUE;
     vkGetPhysicalDeviceSurfaceSupportKHR(
-        context->physical_device.physical_device,
+        context->physical_device.vk_device,
         context->physical_device.queue_family_index,
         surface,
         &surface_supported_by_device_and_queue
