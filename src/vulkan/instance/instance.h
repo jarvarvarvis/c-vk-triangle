@@ -27,6 +27,6 @@ typedef struct {
 } VktVulkanInstance;
 
 int vkt_create_vulkan_instance(VktVulkanInstance *instance, GLFWwindow *window);
-void vkt_delete_vulkan_instance(VktVulkanInstance *instance);
+void vkt_destroy_vulkan_instance(VktVulkanInstance *instance);
 
 #endif /* VKT_VULKAN_INSTANCE_H */

@@ -102,7 +102,7 @@ int vkt_create_vulkan_instance(VktVulkanInstance *instance, GLFWwindow *window) 
     return VKT_GENERIC_SUCCESS;
 }
 
-void vkt_delete_vulkan_instance(VktVulkanInstance *instance) {
+void vkt_destroy_vulkan_instance(VktVulkanInstance *instance) {
     // Destroy debug messenger before instance
 #ifdef BUILD_MODE_DEBUG
     vkt_debug_destroy_messenger(instance->vk_instance, instance->debug_messenger);

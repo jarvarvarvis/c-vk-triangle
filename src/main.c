@@ -6,8 +6,7 @@
 #include "vulkan/common.h"
 #include "vulkan/instance/instance.h"
 #include "vulkan/device/physical.h"
-
-#include <vk_mem_alloc.h>
+#include "vulkan/device/logical.h"
 
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
@@ -36,10 +35,17 @@ int main() {
 
     // Physical device discovery
     VktFindPhysicalDeviceResult phys_device_result;
-    VktFindPhysicalDeviceProps find_props;
-    find_props.queue_family_bits = VK_QUEUE_GRAPHICS_BIT;
-    if (vkt_find_physical_device(&instance, find_props, &phys_device_result) != VKT_GENERIC_SUCCESS) {
+    VktFindPhysicalDeviceProps find_phys_device_props;
+    find_phys_device_props.queue_family_bits = VK_QUEUE_GRAPHICS_BIT;
+    if (vkt_find_physical_device(&instance, find_phys_device_props, &phys_device_result) != VKT_GENERIC_SUCCESS) {
         c_log(C_LOG_SEVERITY_ERROR, "Unable to find physical device!");
+        return EXIT_FAILURE;
+    }
+
+    // Create logical device
+    VktLogicalDevice device;
+    if (vkt_create_logical_device(&device, phys_device_result) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Unable to create logical device!");
         return EXIT_FAILURE;
     }
 
@@ -49,7 +55,8 @@ int main() {
     }
 
     // Clean up
-    vkt_delete_vulkan_instance(&instance);
+    vkt_destroy_logical_device(&device);
+    vkt_destroy_vulkan_instance(&instance);
 
     glfwDestroyWindow(window);
     glfwTerminate();
