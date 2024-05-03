@@ -33,9 +33,11 @@ int vkt_create_logical_device(
     device_info.queueCreateInfoCount = 1;
     device_info.pQueueCreateInfos = &queue_info;
 
+    // No extensions
     device_info.enabledExtensionCount = 0;
     device_info.ppEnabledExtensionNames = NULL;
 
+    // No layers
     device_info.enabledLayerCount = 0;
     device_info.ppEnabledLayerNames = NULL;
 

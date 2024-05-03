@@ -41,9 +41,9 @@ VkInstanceCreateInfo vkt_create_instance_create_info(VkApplicationInfo *app_info
     // Set application info
     inst_create_info.pApplicationInfo = app_info;
 
-    // No layers set for now
-    inst_create_info.enabledLayerCount = sizeof(VKT_ENABLED_LAYERS) / sizeof(char *);
-    inst_create_info.ppEnabledLayerNames = VKT_ENABLED_LAYERS;
+    // Enable layers specified in VKT_ENABLED_LAYER_NAMES
+    inst_create_info.enabledLayerCount = sizeof(VKT_ENABLED_LAYER_NAMES) / sizeof(char *);
+    inst_create_info.ppEnabledLayerNames = VKT_ENABLED_LAYER_NAMES;
 
     // Log enabled extensions
     c_log(C_LOG_SEVERITY_DEBUG, "Enabled Vulkan extensions:");
