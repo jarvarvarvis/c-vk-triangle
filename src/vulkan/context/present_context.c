@@ -5,6 +5,8 @@
 #include <c_log/c_log.h>
 
 int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *present_context, GLFWwindow *window) {
+    memset(present_context, 0, sizeof(VktPresentContext));
+
     // Create window surface
     VkSurfaceKHR surface;
     if (glfwCreateWindowSurface(context->instance.vk_instance, window, NULL, &surface) != VK_SUCCESS) {
