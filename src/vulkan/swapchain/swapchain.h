@@ -6,7 +6,16 @@
 #include "../context/context.h"
 #include "../context/present_context.h"
 
-int vkt_create_swapchain(VktVulkanContext *context, VktPresentContext *present_context, VkSwapchainKHR *swapchain);
+typedef struct {
+    VkPresentModeKHR desired_present_mode;
+} VktSwapchainCreationProps;
+
+int vkt_create_swapchain(
+    VktVulkanContext *context,
+    VktPresentContext *present_context,
+    VktSwapchainCreationProps props,
+    VkSwapchainKHR *swapchain
+);
 void vkt_destroy_swapchain(VktVulkanContext *context, VkSwapchainKHR swapchain);
 
 #endif /* VKT_VULKAN_SWAPCHAIN_H */

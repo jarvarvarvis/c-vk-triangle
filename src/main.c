@@ -44,7 +44,9 @@ int main() {
 
     // Create swapchain
     VkSwapchainKHR swapchain;
-    if (vkt_create_swapchain(&vk_context, &present_context, &swapchain) != VKT_GENERIC_SUCCESS) {
+    VktSwapchainCreationProps swapchain_props;
+    swapchain_props.desired_present_mode = VK_PRESENT_MODE_FIFO_KHR;
+    if (vkt_create_swapchain(&vk_context, &present_context, swapchain_props, &swapchain) != VKT_GENERIC_SUCCESS) {
         c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain!");
         return EXIT_FAILURE;
     }

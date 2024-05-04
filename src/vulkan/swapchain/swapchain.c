@@ -4,7 +4,12 @@
 
 #include <string.h>
 
-int vkt_create_swapchain(VktVulkanContext *context, VktPresentContext *present_context, VkSwapchainKHR *swapchain) {
+int vkt_create_swapchain(
+    VktVulkanContext *context,
+    VktPresentContext *present_context,
+    VktSwapchainCreationProps props,
+    VkSwapchainKHR *swapchain
+) {
     VkSwapchainCreateInfoKHR swapchain_info;
     memset(&swapchain_info, 0, sizeof(VkSwapchainCreateInfoKHR));
 
@@ -63,25 +68,29 @@ int vkt_create_swapchain(VktVulkanContext *context, VktPresentContext *present_c
         return VKT_GENERIC_FAILURE;
     }
 
-    // Validate that VK_PRESENT_MODE_FIFO_KHR is supported (it should be)
-    VkPresentModeKHR desired_present_mode = VK_PRESENT_MODE_FIFO_KHR;
+    // Get index for the desired present mode
+    const VkPresentModeKHR FALLBACK_PRESENT_MODE = VK_PRESENT_MODE_FIFO_KHR;
     int present_mode_idx = -1;
+    int fallback_present_mode_idx = -1;
     for (int i = 0; i < present_mode_count; ++i) {
         VkPresentModeKHR present_mode = present_modes[i];
-        if (present_mode == desired_present_mode) {
+        if (present_mode == props.desired_present_mode) {
             present_mode_idx = i;
-            break;
+        }
+        if (present_mode == FALLBACK_PRESENT_MODE) {
+            fallback_present_mode_idx = i;
         }
     }
 
     free(present_modes);
 
-    if (present_mode_idx == -1) {
-        c_log(C_LOG_SEVERITY_ERROR, "VK_PRESENT_MODE_FIFO_KHR is not supported, something might be wrong!");
+    if (fallback_present_mode_idx == -1) {
+        c_log(C_LOG_SEVERITY_ERROR, "Fallback VK_PRESENT_MODE_FIFO_KHR is not supported, something might be wrong!");
         return VKT_GENERIC_FAILURE;
     }
 
-    swapchain_info.presentMode = desired_present_mode;
+    // Set the desired present mode if it is supported and FALLBACK_PRESENT_MODE otherwise
+    swapchain_info.presentMode = (present_mode_idx != -1 ? props.desired_present_mode : FALLBACK_PRESENT_MODE);
 
     // Finally create the swapchain
     VKT_CHECK(vkCreateSwapchainKHR(context->logical_device.vk_device, &swapchain_info, NULL, swapchain));
