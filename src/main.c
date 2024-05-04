@@ -3,6 +3,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <unistd.h>
+
 #include "vulkan/context/context.h"
 #include "vulkan/context/present_context.h"
 #include "vulkan/swapchain/swapchain.h"
@@ -67,6 +69,7 @@ int main() {
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
+        sleep(1);
         glfwPollEvents();
     }
 
