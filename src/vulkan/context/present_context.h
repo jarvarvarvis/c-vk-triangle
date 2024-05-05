@@ -8,14 +8,17 @@
 
 #include "context.h"
 
-#include "../swapchain/swapchain.h"
 #include "../surface/surface_info.h"
+
+#include "../swapchain/swapchain.h"
+#include "../swapchain/images.h"
 
 typedef struct {
     VkSurfaceKHR surface;
     VktSurfaceInfo surface_info;
 
     VkSwapchainKHR swapchain;
+    VktSwapchainImages swapchain_images;
 } VktPresentContext;
 
 int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *present_context, GLFWwindow *window);

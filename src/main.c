@@ -46,7 +46,7 @@ int main() {
 
     // Create swapchain
     VktSwapchainCreateProps swapchain_props;
-    swapchain_props.desired_present_mode = VK_PRESENT_MODE_FIFO_KHR;
+    swapchain_props.desired_present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
     if (vkt_create_present_context_swapchain(&vk_context, &present_context, swapchain_props) != VKT_GENERIC_SUCCESS) {
         c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain for the window surface!");
         return EXIT_FAILURE;

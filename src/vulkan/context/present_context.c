@@ -42,6 +42,8 @@ int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *pre
 
 int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentContext *present_context, VktSwapchainCreateProps props) {
     memset(&present_context->swapchain, 0, sizeof(VkSwapchainKHR));
+
+    // Create the swapchain
     VKT_CHECK(vkt_create_swapchain(
         context,
         present_context->surface,
@@ -50,10 +52,19 @@ int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentCo
         &present_context->swapchain
     ));
 
+    // Create swapchain images
+    VKT_CHECK(vkt_create_swapchain_images(
+        context,
+        present_context->swapchain,
+        present_context->surface_info.surface_formats[0].format,
+        &present_context->swapchain_images
+    ));
+
     return VKT_GENERIC_SUCCESS;
 }
 
 void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context) {
+    vkt_destroy_swapchain_images(context, &present_context->swapchain_images);
     vkt_destroy_swapchain(context, present_context->swapchain);
 
     vkDestroySurfaceKHR(context->instance.vk_instance, present_context->surface, NULL);

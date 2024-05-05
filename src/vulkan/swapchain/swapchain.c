@@ -106,6 +106,7 @@ int vkt_create_swapchain(
     c_log(C_LOG_SEVERITY_DEBUG, "- Pre transform: %s", string_VkSurfaceTransformFlagBitsKHR(swapchain_info.preTransform));
     c_log(C_LOG_SEVERITY_DEBUG, "- Image format: %s", string_VkFormat(swapchain_info.imageFormat));
     c_log(C_LOG_SEVERITY_DEBUG, "- Image extent: %d x %d", swapchain_info.imageExtent.width, swapchain_info.imageExtent.height);
+    printf("\n");
 
     return VKT_GENERIC_SUCCESS;
 }
