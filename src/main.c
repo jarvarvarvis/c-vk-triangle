@@ -5,12 +5,8 @@
 
 #include <unistd.h>
 
-#include "vulkan/context/context.h"
-#include "vulkan/context/present_context.h"
-#include "vulkan/swapchain/swapchain.h"
-#include "vulkan/command/pool.h"
-#include "vulkan/command/buffer.h"
 #include "vulkan/common.h"
+#include "vulkan/engine/engine.h"
 
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
@@ -30,51 +26,13 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    // Create Vulkan context
-    VktVulkanContext vk_context;
-    if (vkt_create_basic_graphics_context(&vk_context, "c-vk-triangle") != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create Vulkan context!");
-        return EXIT_FAILURE;
-    }
+    // Create the vulkan engine
+    VktEngineCreateProps engine_props;
+    engine_props.swapchain_props.desired_present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
 
-    // Create present context
-    VktPresentContext present_context;
-    if (vkt_create_present_context(&vk_context, &present_context, window) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create present context!");
-        return EXIT_FAILURE;
-    }
-
-    // Create swapchain
-    VktSwapchainCreateProps swapchain_props;
-    swapchain_props.desired_present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
-    if (vkt_create_present_context_swapchain(&vk_context, &present_context, swapchain_props) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain for the window surface!");
-        return EXIT_FAILURE;
-    }
-
-    // Create render pass
-    if (vkt_create_present_context_render_pass(&vk_context, &present_context) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create render pass!");
-        return EXIT_FAILURE;
-    }
-
-    // Create framebuffers
-    if (vkt_create_present_context_framebuffers(&vk_context, &present_context) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create render pass!");
-        return EXIT_FAILURE;
-    }
-
-    // Create command pool
-    VkCommandPool test_cmd_pool;
-    if (vkt_create_command_pool(&vk_context, &test_cmd_pool) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create graphics command pool!");
-        return EXIT_FAILURE;
-    }
-
-    // Create test command buffer
-    VkCommandBuffer test_buffer;
-    if (vkt_allocate_primary_command_buffers(&vk_context, test_cmd_pool, &test_buffer, 1) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to allocate test command buffer!");
+    VktEngine engine;
+    if (vkt_create_engine("c-vk-triangle", window, &engine_props, &engine) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create engine!");
         return EXIT_FAILURE;
     }
 
@@ -85,10 +43,7 @@ int main() {
     }
 
     // Clean up
-    vkt_free_command_buffers(&vk_context, test_cmd_pool, &test_buffer, 1);
-    vkt_destroy_command_pool(&vk_context, test_cmd_pool);
-    vkt_destroy_present_context(&vk_context, &present_context);
-    vkt_destroy_context(&vk_context);
+    vkt_destroy_engine(&engine);
 
     glfwDestroyWindow(window);
     glfwTerminate();
