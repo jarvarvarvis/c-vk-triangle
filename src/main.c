@@ -52,6 +52,12 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    // Create render pass
+    if (vkt_create_present_context_render_pass(&vk_context, &present_context) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create render pass!");
+        return EXIT_FAILURE;
+    }
+
     // Create command pool
     VkCommandPool test_cmd_pool;
     if (vkt_create_command_pool(&vk_context, &test_cmd_pool) != VKT_GENERIC_SUCCESS) {

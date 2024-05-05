@@ -1,6 +1,7 @@
 #include "present_context.h"
 
 #include "../common.h"
+#include "../renderpass/renderpass.h"
 
 #include <c_log/c_log.h>
 
@@ -63,7 +64,22 @@ int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentCo
     return VKT_GENERIC_SUCCESS;
 }
 
+int vkt_create_present_context_render_pass(VktVulkanContext *context, VktPresentContext *present_context) {
+    memset(&present_context->render_pass, 0, sizeof(VkRenderPass));
+
+    // Create the render pass
+    VKT_CHECK(vkt_create_default_renderpass(
+        context,
+        present_context->surface_info.surface_formats[0].format,
+        &present_context->render_pass
+    ));
+
+    return VKT_GENERIC_SUCCESS;
+}
+
 void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context) {
+    vkt_destroy_renderpass(context, present_context->render_pass);
+
     vkt_destroy_swapchain_images(context, &present_context->swapchain_images);
     vkt_destroy_swapchain(context, present_context->swapchain);
 
