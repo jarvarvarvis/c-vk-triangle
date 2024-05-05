@@ -9,9 +9,12 @@
 #include "context.h"
 
 #include "../swapchain/swapchain.h"
+#include "../surface/surface_info.h"
 
 typedef struct {
     VkSurfaceKHR surface;
+    VktSurfaceInfo surface_info;
+
     VkSwapchainKHR swapchain;
 } VktPresentContext;
 

@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.h>
 
 #include "../context/context.h"
+#include "../surface/surface_info.h"
 
 typedef struct {
     VkPresentModeKHR desired_present_mode;
@@ -12,6 +13,7 @@ typedef struct {
 int vkt_create_swapchain(
     VktVulkanContext *context,
     VkSurfaceKHR surface,
+    VktSurfaceInfo *surface_info,
     VktSwapchainCreateProps props,
     VkSwapchainKHR *swapchain
 );
