@@ -43,6 +43,7 @@ int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *pre
 
 int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentContext *present_context, VktSwapchainCreateProps props) {
     memset(&present_context->swapchain, 0, sizeof(VkSwapchainKHR));
+    memset(&present_context->swapchain_images, 0, sizeof(VktSwapchainImages));
 
     // Create the swapchain
     VKT_CHECK(vkt_create_swapchain(
@@ -77,7 +78,23 @@ int vkt_create_present_context_render_pass(VktVulkanContext *context, VktPresent
     return VKT_GENERIC_SUCCESS;
 }
 
+int vkt_create_present_context_framebuffers(VktVulkanContext *context, VktPresentContext *present_context) {
+    memset(&present_context->framebuffers, 0, sizeof(VktFramebuffers));
+
+    // Create the framebuffers
+    VKT_CHECK(vkt_create_framebuffers(
+        context,
+        &present_context->swapchain_images,
+        present_context->render_pass,
+        present_context->surface_info.surface_capabilities.currentExtent,
+        &present_context->framebuffers
+    ));
+
+    return VKT_GENERIC_SUCCESS;
+}
+
 void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context) {
+    vkt_destroy_framebuffers(context, &present_context->framebuffers);
     vkt_destroy_renderpass(context, present_context->render_pass);
 
     vkt_destroy_swapchain_images(context, &present_context->swapchain_images);
