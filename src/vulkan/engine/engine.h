@@ -4,6 +4,8 @@
 #include "../context/context.h"
 #include "../context/present_context.h"
 
+#include "sync.h"
+
 typedef struct {
     VktSwapchainCreateProps swapchain_props;
 } VktEngineCreateProps;
@@ -11,6 +13,8 @@ typedef struct {
 typedef struct {
     VktVulkanContext vk_context;
     VktPresentContext present_context;
+
+    VktEngineSyncStructures sync_structures;
 
     VkCommandPool main_command_pool;
     VkCommandBuffer main_command_buffer;
