@@ -45,11 +45,10 @@ int main() {
     }
 
     // Create swapchain
-    VkSwapchainKHR swapchain;
-    VktSwapchainCreationProps swapchain_props;
+    VktSwapchainCreateProps swapchain_props;
     swapchain_props.desired_present_mode = VK_PRESENT_MODE_FIFO_KHR;
-    if (vkt_create_swapchain(&vk_context, &present_context, swapchain_props, &swapchain) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain!");
+    if (vkt_create_present_context_swapchain(&vk_context, &present_context, swapchain_props) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain for the window surface!");
         return EXIT_FAILURE;
     }
 
@@ -76,7 +75,6 @@ int main() {
     // Clean up
     vkt_free_command_buffers(&vk_context, test_cmd_pool, &test_buffer, 1);
     vkt_destroy_command_pool(&vk_context, test_cmd_pool);
-    vkt_destroy_swapchain(&vk_context, swapchain);
     vkt_destroy_present_context(&vk_context, &present_context);
     vkt_destroy_context(&vk_context);
 
