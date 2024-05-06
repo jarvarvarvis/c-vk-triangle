@@ -22,7 +22,9 @@ typedef struct {
     VkSwapchainKHR swapchain;
     VktSwapchainImages swapchain_images;
 
-    VkRenderPass render_pass;
+    VkExtent2D image_size;
+
+    VkRenderPass main_render_pass;
     VktFramebuffers framebuffers;
 } VktPresentContext;
 
@@ -30,6 +32,9 @@ int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *pre
 int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentContext *present_context, VktSwapchainCreateProps props);
 int vkt_create_present_context_render_pass(VktVulkanContext *context, VktPresentContext *present_context);
 int vkt_create_present_context_framebuffers(VktVulkanContext *context, VktPresentContext *present_context);
+
+VkExtent2D vkt_present_context_get_swapchain_extent(VktPresentContext *present_context);
+
 void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context);
 
 #endif /* VKT_VULKAN_PRESENT_CONTEXT_H */

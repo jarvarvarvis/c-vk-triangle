@@ -35,6 +35,7 @@ int vkt_create_basic_graphics_context(VktVulkanContext *context, char *app_name)
     context->instance = instance;
     context->physical_device = physical_device;
     context->logical_device = logical_device;
+    context->present_queue = vkt_get_logical_device_queue(&logical_device, 0);
 
     return VKT_GENERIC_SUCCESS;
 }

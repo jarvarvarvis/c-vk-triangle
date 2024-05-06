@@ -23,12 +23,16 @@ int vkt_create_framebuffers(
     framebuffer_create_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
     framebuffer_create_info.pNext = NULL;
 
-    framebuffer_create_info.renderPass = render_pass;
     framebuffer_create_info.attachmentCount = 1;
+
+    framebuffer_create_info.renderPass = render_pass;
 
     framebuffer_create_info.width = image_extent.width;
     framebuffer_create_info.height = image_extent.height;
     framebuffer_create_info.layers = 1;
+
+    c_log(C_LOG_SEVERITY_DEBUG, "Creating %d framebuffers (one for each image in the swapchain)", framebuffers->framebuffer_count);
+    c_log(C_LOG_SEVERITY_DEBUG, "- Framebuffer size: %d x %d", framebuffer_create_info.width, framebuffer_create_info.height);
 
     // Create framebuffer for each image in the swapchain
     for (uint32_t i = 0; i < framebuffers->framebuffer_count; ++i) {
@@ -41,7 +45,6 @@ int vkt_create_framebuffers(
         ));
     }
 
-    c_log(C_LOG_SEVERITY_DEBUG, "Created %d framebuffers (one for each image in the swapchain)", framebuffers->framebuffer_count);
     printf("\n");
 
     return VKT_GENERIC_SUCCESS;

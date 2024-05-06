@@ -4,10 +4,7 @@
 
 #include <string.h>
 
-int vkt_create_logical_device(
-    VktLogicalDevice *device,
-    VktPhysicalDevice physical_device
-) {
+int vkt_create_logical_device(VktLogicalDevice *device, VktPhysicalDevice physical_device) {
     memset(device, 0, sizeof(VktLogicalDevice));
 
     // Device Queue
@@ -48,7 +45,15 @@ int vkt_create_logical_device(
 
     // Create the device
     VKT_CHECK(vkCreateDevice(physical_device.vk_device, &device_info, NULL, &device->vk_device));
+    device->queue_family_index = physical_device.queue_family_index;
+
     return VKT_GENERIC_SUCCESS;
+}
+
+VkQueue vkt_get_logical_device_queue(VktLogicalDevice *device, uint32_t index) {
+    VkQueue queue;
+    vkGetDeviceQueue(device->vk_device, device->queue_family_index, index, &queue);
+    return queue;
 }
 
 void vkt_destroy_logical_device(VktLogicalDevice *device) {

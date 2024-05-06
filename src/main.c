@@ -7,6 +7,7 @@
 
 #include "vulkan/common.h"
 #include "vulkan/engine/engine.h"
+#include "vulkan/engine/commands.h"
 
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
@@ -38,8 +39,32 @@ int main() {
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
-        sleep(1);
         glfwPollEvents();
+
+        VKT_CHECK(vkt_engine_wait_for_last_frame(&engine));
+
+        uint32_t swapchain_image_index = 0;
+        VKT_CHECK(vkt_engine_acquire_next_image(&engine, &swapchain_image_index));
+
+        VKT_CHECK(vkt_engine_begin_main_command_buffer(&engine));
+        {
+            // Create arguments for begin renderpass command
+            VktCmdBeginRenderPassArgs renderpass_args;
+            renderpass_args.has_clear_value = true;
+            float clear_color[4] = { 0.0, 0.0, 1.0, 1.0 };
+            for (int i = 0; i < 4; ++i) {
+                renderpass_args.clear_value.color.float32[i] = clear_color[i];
+            }
+            renderpass_args.swapchain_image_index = swapchain_image_index;
+
+            // Begin and then end the render pass (to perform the image layout transition)
+            vkt_engine_cmd_begin_main_render_pass(&engine, renderpass_args);
+            vkt_engine_cmd_end_main_render_pass(&engine);
+        }
+        VKT_CHECK(vkt_engine_end_main_command_buffer(&engine));
+        VKT_CHECK(vkt_engine_submit_main_command_buffer_to_present_queue(&engine));
+
+        VKT_CHECK(vkt_engine_present_queue(&engine, swapchain_image_index));
     }
 
     // Clean up

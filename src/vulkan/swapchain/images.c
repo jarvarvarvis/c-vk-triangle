@@ -18,10 +18,10 @@ int vkt_create_swapchain_image_view(
     create_info.format = format;
 
     VkComponentMapping component_mapping;
-    component_mapping.r = VK_COMPONENT_SWIZZLE_R;
-    component_mapping.g = VK_COMPONENT_SWIZZLE_G;
-    component_mapping.b = VK_COMPONENT_SWIZZLE_B;
-    component_mapping.a = VK_COMPONENT_SWIZZLE_A;
+    component_mapping.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    component_mapping.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    component_mapping.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    component_mapping.a = VK_COMPONENT_SWIZZLE_IDENTITY;
     create_info.components = component_mapping;
 
     VkImageSubresourceRange subresource_range;

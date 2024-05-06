@@ -11,7 +11,7 @@ int vkt_create_command_pool(VktVulkanContext *ctx, VkCommandPool *pool) {
     cmd_pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     cmd_pool_info.pNext = NULL;
     cmd_pool_info.queueFamilyIndex = ctx->physical_device.queue_family_index;
-    cmd_pool_info.flags = 0;
+    cmd_pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     VKT_CHECK(vkCreateCommandPool(ctx->logical_device.vk_device, &cmd_pool_info, NULL, pool));
     return VKT_GENERIC_SUCCESS;

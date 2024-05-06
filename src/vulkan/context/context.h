@@ -9,6 +9,8 @@ typedef struct {
     VktVulkanInstance instance;
     VktPhysicalDevice physical_device;
     VktLogicalDevice logical_device;
+
+    VkQueue present_queue;
 } VktVulkanContext;
 
 int vkt_create_basic_graphics_context(VktVulkanContext *context, char *app_name);

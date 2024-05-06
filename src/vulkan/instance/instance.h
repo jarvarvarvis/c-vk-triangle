@@ -7,7 +7,7 @@
 #include <vulkan/vulkan.h>
 
 static const char *const VKT_INSTANCE_ENABLED_LAYER_NAMES[] = {
-    // Enable VK_LAYER_KHRONOS_validation in debug build mode
+    // Enable validation layers in debug build mode
 #ifdef BUILD_MODE_DEBUG
     "VK_LAYER_KHRONOS_validation"
 #endif

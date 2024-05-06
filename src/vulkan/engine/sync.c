@@ -25,6 +25,20 @@ int vkt_create_engine_sync_structures(VktVulkanContext *context, VktEngineSyncSt
     return VKT_GENERIC_SUCCESS;
 }
 
+int vkt_wait_for_sync_structures_render_fence(VktVulkanContext *context, VktEngineSyncStructures *sync_structures) {
+    // Wait until the GPU has finished rendering the last frame
+    VKT_CHECK(vkWaitForFences(
+        context->logical_device.vk_device,
+        1,
+        &sync_structures->render_fence,
+        true,
+        UINT64_MAX
+    ));
+
+    VKT_CHECK(vkResetFences(context->logical_device.vk_device, 1, &sync_structures->render_fence));
+    return VKT_GENERIC_SUCCESS;
+}
+
 void vkt_destroy_engine_sync_structures(VktVulkanContext *context, VktEngineSyncStructures *sync_structures) {
     vkDestroyFence(context->logical_device.vk_device, sync_structures->render_fence, NULL);
     vkDestroySemaphore(context->logical_device.vk_device, sync_structures->render_semaphore, NULL);

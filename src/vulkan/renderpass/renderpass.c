@@ -38,6 +38,8 @@ int vkt_create_default_renderpass(
     VkRenderPass *render_pass
 ) {
     VkAttachmentDescription color_attachment = vkt_create_default_renderpass_color_attachment(format);
+    c_log(C_LOG_SEVERITY_DEBUG, "Creating default renderpass:");
+    c_log(C_LOG_SEVERITY_DEBUG, "- Format: %s", string_VkFormat(format));
 
     // Create reference to the color attachment
     VkAttachmentReference color_attachment_ref;
@@ -49,8 +51,22 @@ int vkt_create_default_renderpass(
     memset(&subpass, 0, sizeof(VkSubpassDescription));
 
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &color_attachment_ref;
+
+    // Subpass dependency
+    VkSubpassDependency subpass_dependency;
+    subpass_dependency.dependencyFlags = 0;
+
+    subpass_dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    subpass_dependency.dstSubpass = 0;
+
+    subpass_dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpass_dependency.srcAccessMask = 0;
+
+    subpass_dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    subpass_dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
     // The image life will go something like this:
 
@@ -73,6 +89,12 @@ int vkt_create_default_renderpass(
     // Add the subpass
     render_pass_info.subpassCount = 1;
     render_pass_info.pSubpasses = &subpass;
+
+    // Add dependencies
+    render_pass_info.dependencyCount = 1;
+    render_pass_info.pDependencies = &subpass_dependency;
+
+    printf("\n");
 
     // Finally create the render pass
     VKT_CHECK(vkCreateRenderPass(context->logical_device.vk_device, &render_pass_info, NULL, render_pass));
