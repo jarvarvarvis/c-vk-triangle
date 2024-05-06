@@ -29,7 +29,7 @@ int main() {
 
     // Create the vulkan engine
     VktEngineCreateProps engine_props;
-    engine_props.swapchain_props.desired_present_mode = VK_PRESENT_MODE_MAILBOX_KHR;
+    engine_props.swapchain_props.desired_present_mode = VK_PRESENT_MODE_FIFO_KHR;
 
     VktEngine engine;
     if (vkt_create_engine("c-vk-triangle", window, &engine_props, &engine) != VKT_GENERIC_SUCCESS) {
