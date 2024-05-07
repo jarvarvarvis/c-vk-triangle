@@ -6,6 +6,8 @@
 #include <unistd.h>
 
 #include "vulkan/common.h"
+#include "vulkan/helper.h"
+
 #include "vulkan/engine/engine.h"
 #include "vulkan/engine/commands.h"
 
@@ -22,6 +24,9 @@ int vkt_create_triangle_pipeline(VktEngine *engine, VkPipelineLayout layout, VkP
 
     vkt_pipeline_builder_set_viewport_from_extent(&builder, engine->render_image_extent);
     vkt_pipeline_builder_set_scissor_from_extent(&builder, engine->render_image_extent);
+
+    vkt_pipeline_builder_push_dynamic_state(&builder, VK_DYNAMIC_STATE_VIEWPORT);
+    vkt_pipeline_builder_push_dynamic_state(&builder, VK_DYNAMIC_STATE_SCISSOR);
 
     vkt_pipeline_builder_set_pipeline_layout(&builder, layout);
 
@@ -119,6 +124,13 @@ int main() {
             // Begin and then end the render pass (to perform the image layout transition)
             vkt_engine_cmd_begin_main_render_pass(engine, renderpass_args);
             {
+                // Update viewport and scissor (dynamic state)
+                VkViewport viewport = vkt_helper_viewport_from_extent(engine->render_image_extent);
+                vkCmdSetViewport(engine->main_command_buffer, 0, 1, &viewport);
+
+                VkRect2D scissor = vkt_helper_rect2d_from_extent(engine->render_image_extent);
+                vkCmdSetScissor(engine->main_command_buffer, 0, 1, &scissor);
+
                 // Render using the triangle pipeline
                 vkCmdBindPipeline(engine->main_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, triangle_pipeline);
                 vkCmdDraw(engine->main_command_buffer, 3, 1, 0, 0);

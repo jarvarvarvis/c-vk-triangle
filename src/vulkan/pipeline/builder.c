@@ -1,6 +1,7 @@
 #include "builder.h"
 
 #include "../common.h"
+#include "../helper.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +9,10 @@
 VktPipelineBuilder vkt_pipeline_builder_new() {
     VktPipelineBuilder builder;
     memset(&builder, 0, sizeof(VktPipelineBuilder));
+
+    builder.dynamic_states_len = 0;
+    builder.dynamic_states_cap = 2;
+    builder.dynamic_states = malloc(sizeof(VkDynamicState) * builder.dynamic_states_cap);
 
     builder.shader_stages_len = 0;
     builder.shader_stages_cap = 2;
@@ -21,14 +26,7 @@ void vkt_pipeline_builder_set_viewport(VktPipelineBuilder *builder, VkViewport v
 }
 
 void vkt_pipeline_builder_set_viewport_from_extent(VktPipelineBuilder *builder, VkExtent2D extent) {
-    VkViewport viewport;
-    viewport.x = 0.f;
-    viewport.y = 0.f;
-    viewport.width = extent.width;
-    viewport.height = extent.height;
-    viewport.minDepth = 0.f;
-    viewport.maxDepth = 1.f;
-    vkt_pipeline_builder_set_viewport(builder, viewport);
+    vkt_pipeline_builder_set_viewport(builder, vkt_helper_viewport_from_extent(extent));
 }
 
 void vkt_pipeline_builder_set_scissor(VktPipelineBuilder *builder, VkRect2D scissor) {
@@ -36,11 +34,18 @@ void vkt_pipeline_builder_set_scissor(VktPipelineBuilder *builder, VkRect2D scis
 }
 
 void vkt_pipeline_builder_set_scissor_from_extent(VktPipelineBuilder *builder, VkExtent2D extent) {
-    VkRect2D scissor;
-    scissor.offset.x = 0;
-    scissor.offset.y = 0;
-    scissor.extent = extent;
-    vkt_pipeline_builder_set_scissor(builder, scissor);
+    vkt_pipeline_builder_set_scissor(builder, vkt_helper_rect2d_from_extent(extent));
+}
+
+void vkt_pipeline_builder_push_dynamic_state(VktPipelineBuilder *builder, VkDynamicState dynamic_state) {
+    // Reallocate the list if necessary
+    if (builder->dynamic_states_len >= builder->dynamic_states_cap) {
+        builder->dynamic_states_cap *= 2;
+        builder->dynamic_states = realloc(builder->dynamic_states, sizeof(VkDynamicState) * builder->dynamic_states_cap);
+    }
+
+    builder->dynamic_states[builder->dynamic_states_len] = dynamic_state;
+    builder->dynamic_states_len++;
 }
 
 void vkt_pipeline_builder_set_pipeline_layout(VktPipelineBuilder *builder, VkPipelineLayout pipeline_layout) {
@@ -177,6 +182,16 @@ int vkt_pipeline_builder_build_pipeline(VktVulkanContext *context, VktPipelineBu
     color_blend_state.attachmentCount = 1;
     color_blend_state.pAttachments = &builder->color_blend_attachment_state;
 
+    // Create dynamic state
+    VkPipelineDynamicStateCreateInfo dynamic_state;
+    memset(&dynamic_state, 0, sizeof(VkPipelineDynamicStateCreateInfo));
+
+    dynamic_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamic_state.pNext = NULL;
+
+    dynamic_state.dynamicStateCount = builder->dynamic_states_len;
+    dynamic_state.pDynamicStates = builder->dynamic_states;
+
     // Build the pipeline
     VkGraphicsPipelineCreateInfo pipeline_info;
     memset(&pipeline_info, 0, sizeof(VkGraphicsPipelineCreateInfo));
@@ -194,6 +209,8 @@ int vkt_pipeline_builder_build_pipeline(VktVulkanContext *context, VktPipelineBu
     pipeline_info.pMultisampleState = &builder->multisampling_state;
     pipeline_info.pColorBlendState = &color_blend_state;
 
+    pipeline_info.pDynamicState = &dynamic_state;
+
     pipeline_info.layout = builder->pipeline_layout;
     pipeline_info.renderPass = pass;
     pipeline_info.subpass = 0;
@@ -205,5 +222,6 @@ int vkt_pipeline_builder_build_pipeline(VktVulkanContext *context, VktPipelineBu
 }
 
 void vkt_pipeline_builder_destroy(VktPipelineBuilder *builder) {
+    free(builder->dynamic_states);
     free(builder->shader_stages);
 }

@@ -9,6 +9,9 @@ typedef struct {
     VkViewport viewport;
     VkRect2D scissor;
 
+    VkDynamicState *dynamic_states;
+    size_t dynamic_states_len, dynamic_states_cap;
+
     VkPipelineLayout pipeline_layout;
 
     VkPipelineShaderStageCreateInfo *shader_stages;
@@ -27,6 +30,8 @@ void vkt_pipeline_builder_set_viewport(VktPipelineBuilder *builder, VkViewport v
 void vkt_pipeline_builder_set_viewport_from_extent(VktPipelineBuilder *builder, VkExtent2D extent);
 void vkt_pipeline_builder_set_scissor(VktPipelineBuilder *builder, VkRect2D scissor);
 void vkt_pipeline_builder_set_scissor_from_extent(VktPipelineBuilder *builder, VkExtent2D extent);
+
+void vkt_pipeline_builder_push_dynamic_state(VktPipelineBuilder *builder, VkDynamicState dynamic_state);
 
 void vkt_pipeline_builder_set_pipeline_layout(VktPipelineBuilder *builder, VkPipelineLayout pipeline_layout);
 
