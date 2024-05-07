@@ -9,6 +9,8 @@
 #include "vulkan/engine/engine.h"
 #include "vulkan/engine/commands.h"
 
+#include "vulkan/shaders/module.h"
+
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
 
@@ -50,6 +52,20 @@ int main() {
     // Set resize callback
     glfwSetWindowSizeCallback(window, vkt_on_window_resize);
 
+    // Load shader modules
+    VkShaderModule triangle_vert_shader;
+    VKT_CHECK(vkt_load_shader_module_from_file(
+        &engine->vk_context,
+        "resources/shaders/triangle.vert.spv",
+        &triangle_vert_shader
+    ));
+    VkShaderModule triangle_frag_shader;
+    VKT_CHECK(vkt_load_shader_module_from_file(
+        &engine->vk_context,
+        "resources/shaders/triangle.frag.spv",
+        &triangle_frag_shader
+    ));
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -85,6 +101,9 @@ int main() {
     }
 
     // Clean up
+    vkt_destroy_shader_module(&engine->vk_context, triangle_vert_shader);
+    vkt_destroy_shader_module(&engine->vk_context, triangle_frag_shader);
+
     vkt_destroy_engine(engine);
     free(engine);
 
