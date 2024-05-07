@@ -115,7 +115,7 @@ int main() {
             // Create arguments for begin renderpass command
             VktCmdBeginRenderPassArgs renderpass_args;
             renderpass_args.has_clear_value = true;
-            float clear_color[4] = { 0.0, 0.0, 1.0, 1.0 };
+            float clear_color[4] = { 0.25, 0.2, 0.25, 1.0 };
             for (int i = 0; i < 4; ++i) {
                 renderpass_args.clear_value.color.float32[i] = clear_color[i];
             }
