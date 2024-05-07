@@ -39,6 +39,8 @@ int vkt_engine_present_queue(VktEngine *engine, uint32_t swapchain_image_index);
 int vkt_engine_on_window_resize(VktEngine *engine, int width, int height);
 int vkt_engine_recreate_swapchain_if_necessary(VktEngine *engine);
 
+int vkt_engine_wait_on_present_queue(VktEngine *engine);
+
 void vkt_destroy_engine(VktEngine *engine);
 
 #endif /* VKT_VULKAN_ENGINE_H */

@@ -208,10 +208,12 @@ int vkt_engine_recreate_swapchain_if_necessary(VktEngine *engine) {
     return VKT_GENERIC_SUCCESS;
 }
 
-void vkt_destroy_engine(VktEngine *engine) {
-    // Wait for present queue
-    vkQueueWaitIdle(engine->vk_context.present_queue);
+int vkt_engine_wait_on_present_queue(VktEngine *engine) {
+    VKT_CHECK(vkQueueWaitIdle(engine->vk_context.present_queue));
+    return VKT_GENERIC_SUCCESS;
+}
 
+void vkt_destroy_engine(VktEngine *engine) {
     vkt_free_command_buffers(&engine->vk_context, engine->main_command_pool, &engine->main_command_buffer, 1);
     vkt_destroy_command_pool(&engine->vk_context, engine->main_command_pool);
 
