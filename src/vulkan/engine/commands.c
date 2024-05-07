@@ -12,7 +12,13 @@ void vkt_engine_cmd_begin_main_render_pass(VktEngine *engine, VktCmdBeginRenderP
     render_pass_info.renderArea.offset.x = 0;
     render_pass_info.renderArea.offset.y = 0;
 
-    VkExtent2D extent = vkt_present_context_get_swapchain_extent(&engine->present_context);
+    // If the window is resized *during* the current iteration of the main loop, the image extent
+    // returned from vkt_present_context_get_latest_surface_extent will be *too* up-to-date.
+    // That's why we keep track of the image size that the latest swapchain was created with.
+    // (This fixes a validation message I got sometimes)
+
+    // VkExtent2D extent = vkt_present_context_get_latest_surface_extent(&engine->present_context);
+    VkExtent2D extent = engine->render_image_extent;
     render_pass_info.renderArea.extent.width = extent.width;
     render_pass_info.renderArea.extent.height = extent.height;
 

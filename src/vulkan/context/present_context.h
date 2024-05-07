@@ -30,10 +30,14 @@ typedef struct {
 
 int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *present_context, GLFWwindow *window);
 int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentContext *present_context, VktSwapchainCreateProps props);
+int vkt_create_present_context_swapchain_images(VktVulkanContext *context, VktPresentContext *present_context);
 int vkt_create_present_context_render_pass(VktVulkanContext *context, VktPresentContext *present_context);
 int vkt_create_present_context_framebuffers(VktVulkanContext *context, VktPresentContext *present_context);
 
-VkExtent2D vkt_present_context_get_swapchain_extent(VktPresentContext *present_context);
+int vkt_present_context_update_on_resize(VktVulkanContext *context, VktPresentContext *present_context, int width, int height);
+VkExtent2D vkt_present_context_get_latest_surface_extent(VktPresentContext *present_context);
+
+void vkt_destroy_present_context_swapchain_and_dependents(VktVulkanContext *context, VktPresentContext *present_context);
 
 void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context);
 

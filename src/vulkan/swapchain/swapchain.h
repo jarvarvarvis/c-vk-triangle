@@ -8,6 +8,7 @@
 
 typedef struct {
     VkPresentModeKHR desired_present_mode;
+    VkExtent2D image_extent;
 } VktSwapchainCreateProps;
 
 int vkt_create_swapchain(
@@ -15,6 +16,7 @@ int vkt_create_swapchain(
     VkSurfaceKHR surface,
     VktSurfaceInfo *surface_info,
     VktSwapchainCreateProps props,
+    VkSwapchainKHR old_swapchain,
     VkSwapchainKHR *swapchain
 );
 

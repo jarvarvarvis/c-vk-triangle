@@ -2,6 +2,7 @@
 
 #include "../common.h"
 #include "../renderpass/renderpass.h"
+#include "../surface/surface.h"
 
 #include <c_log/c_log.h>
 
@@ -49,7 +50,8 @@ int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *pre
 
 int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentContext *present_context, VktSwapchainCreateProps props) {
     memset(&present_context->swapchain, 0, sizeof(VkSwapchainKHR));
-    memset(&present_context->swapchain_images, 0, sizeof(VktSwapchainImages));
+
+    props.image_extent = vkt_present_context_get_latest_surface_extent(present_context);
 
     // Create the swapchain
     VKT_CHECK(vkt_create_swapchain(
@@ -57,8 +59,15 @@ int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentCo
         present_context->surface,
         &present_context->surface_info,
         props,
+        NULL, // old_swapchain = NULL, because the swapchain is created for the first time
         &present_context->swapchain
     ));
+
+    return VKT_GENERIC_SUCCESS;
+}
+
+int vkt_create_present_context_swapchain_images(VktVulkanContext *context, VktPresentContext *present_context) {
+    memset(&present_context->swapchain_images, 0, sizeof(VktSwapchainImages));
 
     // Create swapchain images
     VKT_CHECK(vkt_create_swapchain_images(
@@ -92,14 +101,24 @@ int vkt_create_present_context_framebuffers(VktVulkanContext *context, VktPresen
         context,
         &present_context->swapchain_images,
         present_context->main_render_pass,
-        vkt_present_context_get_swapchain_extent(present_context),
+        vkt_present_context_get_latest_surface_extent(present_context),
         &present_context->framebuffers
     ));
 
     return VKT_GENERIC_SUCCESS;
 }
 
-VkExtent2D vkt_present_context_get_swapchain_extent(VktPresentContext *present_context) {
+int vkt_present_context_update_on_resize(VktVulkanContext *context, VktPresentContext *present_context, int width, int height) {
+    // Update image size
+    present_context->image_size.width = width;
+    present_context->image_size.height = height;
+
+    // Update surface capabilities
+    VKT_CHECK(vkt_query_surface_capabilities(context, present_context->surface, &present_context->surface_info.surface_capabilities));
+    return VKT_GENERIC_SUCCESS;
+}
+
+VkExtent2D vkt_present_context_get_latest_surface_extent(VktPresentContext *present_context) {
     VkExtent2D swapchain_extent;
     VkSurfaceCapabilitiesKHR surface_capabilities = present_context->surface_info.surface_capabilities;
 
@@ -111,33 +130,43 @@ VkExtent2D vkt_present_context_get_swapchain_extent(VktPresentContext *present_c
         swapchain_extent.width = present_context->image_size.width;
         swapchain_extent.height = present_context->image_size.height;
 
-        if (swapchain_extent.width < surface_capabilities.minImageExtent.width) {
-            swapchain_extent.width = surface_capabilities.minImageExtent.width;
-        } else if (swapchain_extent.width > surface_capabilities.maxImageExtent.width) {
-            swapchain_extent.width = surface_capabilities.maxImageExtent.width;
+        int min_width = surface_capabilities.minImageExtent.width,
+            max_width = surface_capabilities.maxImageExtent.width;
+
+        if (swapchain_extent.width < min_width) {
+            swapchain_extent.width = min_width;
+        } else if (swapchain_extent.width > max_width) {
+            swapchain_extent.width = max_width;
         }
 
-        if (swapchain_extent.height < surface_capabilities.minImageExtent.height) {
-            swapchain_extent.height = surface_capabilities.minImageExtent.height;
-        } else if (swapchain_extent.height > surface_capabilities.maxImageExtent.height) {
-            swapchain_extent.height = surface_capabilities.maxImageExtent.height;
+        int min_height = surface_capabilities.minImageExtent.height,
+            max_height = surface_capabilities.maxImageExtent.height;
+
+        if (swapchain_extent.height < min_height) {
+            swapchain_extent.height = min_height;
+        } else if (swapchain_extent.height > max_height) {
+            swapchain_extent.height = max_height;
         }
     } else {
         // If the surface size is defined, the swap chain size must match
         swapchain_extent = surface_capabilities.currentExtent;
-        present_context->image_size.width = surface_capabilities.currentExtent.width;
-        present_context->image_size.height = surface_capabilities.currentExtent.height;
+        present_context->image_size.width = swapchain_extent.width;
+        present_context->image_size.height = swapchain_extent.height;
     }
 
     return swapchain_extent;
 }
 
-void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context) {
+void vkt_destroy_present_context_swapchain_and_dependents(VktVulkanContext *context, VktPresentContext *present_context) {
     vkt_destroy_framebuffers(context, &present_context->framebuffers);
     vkt_destroy_renderpass(context, present_context->main_render_pass);
 
     vkt_destroy_swapchain_images(context, &present_context->swapchain_images);
     vkt_destroy_swapchain(context, present_context->swapchain);
+}
+
+void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context) {
+    vkt_destroy_present_context_swapchain_and_dependents(context, present_context);
 
     vkDestroySurfaceKHR(context->instance.vk_instance, present_context->surface, NULL);
     vkt_destroy_surface_info(&present_context->surface_info);

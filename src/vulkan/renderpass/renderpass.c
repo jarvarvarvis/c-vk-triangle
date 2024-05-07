@@ -38,8 +38,6 @@ int vkt_create_default_renderpass(
     VkRenderPass *render_pass
 ) {
     VkAttachmentDescription color_attachment = vkt_create_default_renderpass_color_attachment(format);
-    c_log(C_LOG_SEVERITY_DEBUG, "Creating default renderpass:");
-    c_log(C_LOG_SEVERITY_DEBUG, "- Format: %s", string_VkFormat(format));
 
     // Create reference to the color attachment
     VkAttachmentReference color_attachment_ref;
@@ -93,8 +91,6 @@ int vkt_create_default_renderpass(
     // Add dependencies
     render_pass_info.dependencyCount = 1;
     render_pass_info.pDependencies = &subpass_dependency;
-
-    printf("\n");
 
     // Finally create the render pass
     VKT_CHECK(vkCreateRenderPass(context->logical_device.vk_device, &render_pass_info, NULL, render_pass));

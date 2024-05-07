@@ -20,11 +20,12 @@ int vkt_write_swapchain_create_info_surface_capabilities(
     VktVulkanContext *context,
     VkSurfaceKHR surface,
     VkSurfaceCapabilitiesKHR surface_capabilities,
+    VkExtent2D image_extent,
     VkSwapchainCreateInfoKHR *swapchain_info
 ) {
     // Write swapchain info
     swapchain_info->minImageCount = surface_capabilities.minImageCount;
-    swapchain_info->imageExtent = surface_capabilities.currentExtent;
+    swapchain_info->imageExtent = image_extent;
 
     // Write pre transform
     VkSurfaceTransformFlagBitsKHR desired_transforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
@@ -74,6 +75,7 @@ int vkt_create_swapchain(
     VkSurfaceKHR surface,
     VktSurfaceInfo *surface_info,
     VktSwapchainCreateProps props,
+    VkSwapchainKHR old_swapchain,
     VkSwapchainKHR *swapchain
 ) {
     VkSwapchainCreateInfoKHR swapchain_info;
@@ -94,19 +96,15 @@ int vkt_create_swapchain(
 
     swapchain_info.imageArrayLayers = 1;
 
-    VKT_CHECK(vkt_write_swapchain_create_info_surface_capabilities(context, surface, surface_info->surface_capabilities, &swapchain_info));
+    VKT_CHECK(vkt_write_swapchain_create_info_surface_capabilities(context, surface, surface_info->surface_capabilities, props.image_extent, &swapchain_info));
 
     VKT_CHECK(vkt_write_swapchain_create_info_present_mode(context, surface, surface_info, &swapchain_info, props.desired_present_mode));
 
+    // Set old swapchain
+    swapchain_info.oldSwapchain = old_swapchain;
+
     // Finally create the swapchain
     VKT_CHECK(vkCreateSwapchainKHR(context->logical_device.vk_device, &swapchain_info, NULL, swapchain));
-
-    c_log(C_LOG_SEVERITY_DEBUG, "Created the swapchain with:");
-    c_log(C_LOG_SEVERITY_DEBUG, "- Present mode: %s", string_VkPresentModeKHR(swapchain_info.presentMode));
-    c_log(C_LOG_SEVERITY_DEBUG, "- Pre transform: %s", string_VkSurfaceTransformFlagBitsKHR(swapchain_info.preTransform));
-    c_log(C_LOG_SEVERITY_DEBUG, "- Image format: %s", string_VkFormat(swapchain_info.imageFormat));
-    c_log(C_LOG_SEVERITY_DEBUG, "- Image extent: %d x %d", swapchain_info.imageExtent.width, swapchain_info.imageExtent.height);
-    printf("\n");
 
     return VKT_GENERIC_SUCCESS;
 }

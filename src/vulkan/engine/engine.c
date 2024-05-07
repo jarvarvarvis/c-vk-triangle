@@ -33,6 +33,15 @@ int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateP
         return VKT_GENERIC_FAILURE;
     }
 
+    engine->need_to_recreate_swapchain = false;
+    engine->render_image_extent = engine->present_context.image_size;
+
+    // Create swapchain images
+    if (vkt_create_present_context_swapchain_images(&engine->vk_context, &engine->present_context) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain for the window surface!");
+        return VKT_GENERIC_FAILURE;
+    }
+
     // Create render pass
     if (vkt_create_present_context_render_pass(&engine->vk_context, &engine->present_context) != VKT_GENERIC_SUCCESS) {
         c_log(C_LOG_SEVERITY_ERROR, "Failed to create render pass!");
@@ -57,6 +66,8 @@ int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateP
         return VKT_GENERIC_FAILURE;
     }
 
+    engine->creation_props = *props;
+
     return VKT_GENERIC_SUCCESS;
 }
 
@@ -66,14 +77,22 @@ int vkt_engine_wait_for_last_frame(VktEngine *engine) {
 }
 
 int vkt_engine_acquire_next_image(VktEngine *engine, uint32_t *image_index) {
-    VKT_CHECK(vkAcquireNextImageKHR(
+    int vk_acquire_next_result = vkAcquireNextImageKHR(
         engine->vk_context.logical_device.vk_device,
         engine->present_context.swapchain,
         UINT64_MAX,
         engine->sync_structures.present_semaphore,
         NULL,
         image_index
-    ));
+    );
+
+    // Check if the swapchain needs to be recreated
+    if (vk_acquire_next_result == VK_SUBOPTIMAL_KHR || vk_acquire_next_result == VK_ERROR_OUT_OF_DATE_KHR) {
+        engine->need_to_recreate_swapchain = true;
+        return VKT_GENERIC_SUCCESS;
+    }
+
+    VKT_CHECK(vk_acquire_next_result);
     return VKT_GENERIC_SUCCESS;
 }
 
@@ -131,7 +150,61 @@ int vkt_engine_present_queue(VktEngine *engine, uint32_t swapchain_image_index) 
 
     present_info.pResults = NULL;
 
-    VKT_CHECK(vkQueuePresentKHR(engine->vk_context.present_queue, &present_info));
+    int queue_present_result = vkQueuePresentKHR(engine->vk_context.present_queue, &present_info);
+
+    // Check if the swapchain needs to be recreated
+    if (queue_present_result == VK_SUBOPTIMAL_KHR || queue_present_result == VK_ERROR_OUT_OF_DATE_KHR) {
+        engine->need_to_recreate_swapchain = true;
+        return VKT_GENERIC_SUCCESS;
+    }
+
+    VKT_CHECK(queue_present_result);
+    return VKT_GENERIC_SUCCESS;
+}
+
+int vkt_engine_on_window_resize(VktEngine *engine, int width, int height) {
+    VKT_CHECK(vkt_present_context_update_on_resize(&engine->vk_context, &engine->present_context, width, height));
+    return VKT_GENERIC_SUCCESS;
+}
+
+int vkt_engine_recreate_swapchain_if_necessary(VktEngine *engine) {
+    if (!engine->need_to_recreate_swapchain) {
+        return VKT_GENERIC_SUCCESS;
+    }
+
+    // Wait for present queue
+    vkQueueWaitIdle(engine->vk_context.present_queue);
+
+    // Set swapchain image extent
+    engine->creation_props.swapchain_props.image_extent = vkt_present_context_get_latest_surface_extent(&engine->present_context);
+
+    // Create a new swapchain from the old swapchain
+    VkSwapchainKHR new_swapchain;
+    VKT_CHECK(vkt_create_swapchain(
+        &engine->vk_context,
+        engine->present_context.surface,
+        &engine->present_context.surface_info,
+        engine->creation_props.swapchain_props,
+        engine->present_context.swapchain,      // Use the old swapchain for recreation
+        &new_swapchain                          // new_swapchain stores the new swapchain
+    ));
+
+    // Destroy the old swapchain and dependent structures in the present context
+    vkt_destroy_present_context_swapchain_and_dependents(&engine->vk_context, &engine->present_context);
+
+    // Set new swapchain in present context
+    engine->present_context.swapchain = new_swapchain;
+
+    // Create new stuff
+    VKT_CHECK(vkt_create_present_context_swapchain_images(&engine->vk_context, &engine->present_context));
+    VKT_CHECK(vkt_create_present_context_render_pass(&engine->vk_context, &engine->present_context));
+    VKT_CHECK(vkt_create_present_context_framebuffers(&engine->vk_context, &engine->present_context));
+
+    engine->need_to_recreate_swapchain = false;
+
+    // Keep track of the image extent the swapchain was created with
+    engine->render_image_extent = engine->creation_props.swapchain_props.image_extent;
+
     return VKT_GENERIC_SUCCESS;
 }
 

@@ -57,10 +57,6 @@ int vkt_create_swapchain_images(
         VKT_CHECK(vkt_create_swapchain_image_view(context, format, images->images[i], &images->image_views[i]));
     }
 
-    c_log(C_LOG_SEVERITY_DEBUG, "Got %d swapchain images", images->image_count);
-    c_log(C_LOG_SEVERITY_DEBUG, "- Created image views with format: %s", string_VkFormat(format));
-    printf("\n");
-
     return VKT_GENERIC_SUCCESS;
 }
 

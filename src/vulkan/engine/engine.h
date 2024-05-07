@@ -6,12 +6,19 @@
 
 #include "sync.h"
 
+#include <stdbool.h>
+
 typedef struct {
     VktSwapchainCreateProps swapchain_props;
 } VktEngineCreateProps;
 
 typedef struct {
+    VktEngineCreateProps creation_props;
+
     VktVulkanContext vk_context;
+
+    bool need_to_recreate_swapchain;
+    VkExtent2D render_image_extent;
     VktPresentContext present_context;
 
     VktEngineSyncStructures sync_structures;
@@ -28,6 +35,9 @@ int vkt_engine_begin_main_command_buffer(VktEngine *engine);
 int vkt_engine_end_main_command_buffer(VktEngine *engine);
 int vkt_engine_submit_main_command_buffer_to_present_queue(VktEngine *engine);
 int vkt_engine_present_queue(VktEngine *engine, uint32_t swapchain_image_index);
+
+int vkt_engine_on_window_resize(VktEngine *engine, int width, int height);
+int vkt_engine_recreate_swapchain_if_necessary(VktEngine *engine);
 
 void vkt_destroy_engine(VktEngine *engine);
 
