@@ -2,14 +2,16 @@
 
 #include "../common.h"
 
+const int QUEUE_FLAGS_MAX_BITS = 9;
+
 void vkt_convert_queue_flags_to_bit_chars(VkQueueFlags flags, char *bit_chars) {
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < QUEUE_FLAGS_MAX_BITS; ++i) {
         VkQueueFlags mask = 1 << i;
         int bit = (flags & mask) >> i;
 
-        bit_chars[7-i] = (bit == 1) ? '1' : '0';
+        bit_chars[QUEUE_FLAGS_MAX_BITS - i - 1] = (bit == 1) ? '1' : '0';
     }
-    bit_chars[8] = '\0';
+    bit_chars[QUEUE_FLAGS_MAX_BITS] = '\0';
 }
 
 int vkt_find_queue_families_for_device(
@@ -39,7 +41,7 @@ int vkt_find_queue_families_for_device(
         // Iterate over queue families
         for (int family_index = 0; family_index < queue_family_count; ++family_index) {
             VkQueueFlags queue_flags = queue_families[family_index].queueFlags;
-            char queue_flags_bit_str[9];
+            char queue_flags_bit_str[QUEUE_FLAGS_MAX_BITS + 1];
             vkt_convert_queue_flags_to_bit_chars(queue_flags, queue_flags_bit_str);
             c_log(C_LOG_SEVERITY_DEBUG, "vkt_find_queue_families_for_device :: queue family %d has flags: %s", family_index, queue_flags_bit_str);
 
