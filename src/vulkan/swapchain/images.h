@@ -1,8 +1,6 @@
 #ifndef VKT_VULKAN_SWAPCHAIN_IMAGES_H
 #define VKT_VULKAN_SWAPCHAIN_IMAGES_H
 
-#include <vulkan/vulkan.h>
-
 #include "../context/context.h"
 
 typedef struct {

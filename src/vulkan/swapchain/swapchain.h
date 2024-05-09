@@ -1,8 +1,6 @@
 #ifndef VKT_VULKAN_SWAPCHAIN_H
 #define VKT_VULKAN_SWAPCHAIN_H
 
-#include <vulkan/vulkan.h>
-
 #include "../context/context.h"
 #include "../surface/surface_info.h"
 

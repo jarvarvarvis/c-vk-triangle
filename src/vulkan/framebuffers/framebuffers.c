@@ -1,8 +1,8 @@
 #include "framebuffers.h"
 
-#include <string.h>
-
 #include "../common.h"
+
+#include <string.h>
 
 int vkt_create_framebuffers(
     VktVulkanContext *context,

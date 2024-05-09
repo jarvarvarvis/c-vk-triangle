@@ -1,8 +1,6 @@
 #ifndef VKT_VULKAN_PIPELINE_BUILDER_H
 #define VKT_VULKAN_PIPELINE_BUILDER_H
 
-#include <vulkan/vulkan.h>
-
 #include "../context/context.h"
 
 typedef struct {

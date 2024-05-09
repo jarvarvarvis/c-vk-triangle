@@ -1,8 +1,6 @@
 #ifndef VKT_VULKAN_SHADER_LOAD_H
 #define VKT_VULKAN_SHADER_LOAD_H
 
-#include <vulkan/vulkan.h>
-
 #include "../context/context.h"
 
 int vkt_load_shader_module_from_file(
