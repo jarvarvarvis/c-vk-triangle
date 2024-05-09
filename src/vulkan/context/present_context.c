@@ -108,14 +108,15 @@ int vkt_create_present_context_framebuffers(VktVulkanContext *context, VktPresen
     return VKT_GENERIC_SUCCESS;
 }
 
-int vkt_present_context_update_on_resize(VktVulkanContext *context, VktPresentContext *present_context, int width, int height) {
+int vkt_present_context_update_surface_capabilities(VktVulkanContext *context, VktPresentContext *present_context) {
+    VKT_CHECK(vkt_query_surface_capabilities(context, present_context->surface, &present_context->surface_info.surface_capabilities));
+    return VKT_GENERIC_SUCCESS;
+}
+
+void vkt_present_context_update_size(VktPresentContext *present_context, int width, int height) {
     // Update image size
     present_context->image_size.width = width;
     present_context->image_size.height = height;
-
-    // Update surface capabilities
-    VKT_CHECK(vkt_query_surface_capabilities(context, present_context->surface, &present_context->surface_info.surface_capabilities));
-    return VKT_GENERIC_SUCCESS;
 }
 
 VkExtent2D vkt_present_context_get_latest_surface_extent(VktPresentContext *present_context) {

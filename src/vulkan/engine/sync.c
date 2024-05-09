@@ -19,8 +19,8 @@ int vkt_create_engine_sync_structures(VktVulkanContext *context, VktEngineSyncSt
     semaphore_create_info.pNext = NULL;
     semaphore_create_info.flags = 0;
 
-    VKT_CHECK(vkCreateSemaphore(context->logical_device.vk_device, &semaphore_create_info, NULL, &sync_structures->render_semaphore));
-    VKT_CHECK(vkCreateSemaphore(context->logical_device.vk_device, &semaphore_create_info, NULL, &sync_structures->present_semaphore));
+    VKT_CHECK(vkCreateSemaphore(context->logical_device.vk_device, &semaphore_create_info, NULL, &sync_structures->render_complete_semaphore));
+    VKT_CHECK(vkCreateSemaphore(context->logical_device.vk_device, &semaphore_create_info, NULL, &sync_structures->present_complete_semaphore));
 
     return VKT_GENERIC_SUCCESS;
 }
@@ -41,6 +41,6 @@ int vkt_wait_for_sync_structures_render_fence(VktVulkanContext *context, VktEngi
 
 void vkt_destroy_engine_sync_structures(VktVulkanContext *context, VktEngineSyncStructures *sync_structures) {
     vkDestroyFence(context->logical_device.vk_device, sync_structures->render_fence, NULL);
-    vkDestroySemaphore(context->logical_device.vk_device, sync_structures->render_semaphore, NULL);
-    vkDestroySemaphore(context->logical_device.vk_device, sync_structures->present_semaphore, NULL);
+    vkDestroySemaphore(context->logical_device.vk_device, sync_structures->render_complete_semaphore, NULL);
+    vkDestroySemaphore(context->logical_device.vk_device, sync_structures->present_complete_semaphore, NULL);
 }

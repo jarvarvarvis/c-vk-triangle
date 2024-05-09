@@ -6,8 +6,8 @@
 typedef struct {
     VkFence render_fence;
 
-    VkSemaphore render_semaphore;
-    VkSemaphore present_semaphore;
+    VkSemaphore render_complete_semaphore;
+    VkSemaphore present_complete_semaphore;
 } VktEngineSyncStructures;
 
 int vkt_create_engine_sync_structures(VktVulkanContext *context, VktEngineSyncStructures *sync_structures);
