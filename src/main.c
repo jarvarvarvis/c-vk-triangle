@@ -107,8 +107,12 @@ int main() {
 
         VKT_CHECK(vkt_engine_wait_for_last_frame(engine));
 
+        // If we know that the swapchain needs to be recreated after acquiring the next image, continue with the next frame
         uint32_t swapchain_image_index = 0;
         VKT_CHECK(vkt_engine_acquire_next_image(engine, &swapchain_image_index));
+        if (engine->need_to_recreate_swapchain) {
+            continue;
+        }
 
         VKT_CHECK(vkt_engine_begin_main_command_buffer(engine));
         {

@@ -76,6 +76,30 @@ int vkt_engine_wait_for_last_frame(VktEngine *engine) {
     return vkt_wait_for_sync_structures_render_fence(&engine->vk_context, &engine->sync_structures);
 }
 
+int vkt_engine_cleanup_dangerous_semaphore(VktEngine *engine, VkSemaphore semaphore) {
+    // Do a dummy submit to the present queue to unsignal the dangerous semaphore.
+    // There doesn't seem to be a cleaner way to do this, unfortunately
+    VkSubmitInfo submit_info;
+
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.pNext = NULL;
+
+    VkPipelineStageFlags wait_stage_mask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    submit_info.pWaitDstStageMask = &wait_stage_mask;
+
+    submit_info.waitSemaphoreCount = 0;
+    submit_info.pWaitSemaphores = NULL;
+
+    submit_info.signalSemaphoreCount = 1;
+    submit_info.pSignalSemaphores = &semaphore;
+
+    submit_info.commandBufferCount = 0;
+    submit_info.pCommandBuffers = NULL;
+
+    VKT_CHECK(vkQueueSubmit(engine->vk_context.present_queue, 1, &submit_info, NULL));
+    return VKT_GENERIC_SUCCESS;
+}
+
 int vkt_engine_acquire_next_image(VktEngine *engine, uint32_t *image_index) {
     int vk_acquire_next_result = vkAcquireNextImageKHR(
         engine->vk_context.logical_device.vk_device,
@@ -87,6 +111,9 @@ int vkt_engine_acquire_next_image(VktEngine *engine, uint32_t *image_index) {
     );
 
     if (vk_acquire_next_result == VK_SUBOPTIMAL_KHR || vk_acquire_next_result == VK_ERROR_OUT_OF_DATE_KHR) {
+        // Clean up the present_complete_semaphore that is now in a dangerous state
+        vkt_engine_cleanup_dangerous_semaphore(engine, engine->sync_structures.present_complete_semaphore);
+
         engine->need_to_recreate_swapchain = true;
         return VKT_GENERIC_SUCCESS;
     }
