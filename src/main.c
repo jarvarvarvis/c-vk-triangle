@@ -11,7 +11,7 @@
 #include "vulkan/engine/engine.h"
 #include "vulkan/engine/commands.h"
 
-#include "vulkan/shaders/module.h"
+#include "vulkan/shader/module.h"
 #include "vulkan/pipeline/builder.h"
 #include "vulkan/pipeline/layout.h"
 #include "vulkan/pipeline/pipeline.h"
