@@ -9,22 +9,19 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
-# Set C++ standard for VMA
-set(CMAKE_CXX_STANDARD 11)
-
 # Find base dependencies (Vulkan)
 find_package(Vulkan REQUIRED)
 
 # VulkanMemoryAllocator
 set(VMA_PROJ_PATH "${CMAKE_SOURCE_DIR}/thirdparty/VulkanMemoryAllocator")
 
-# Set options for VMA building (disable all stuff not strictly necessary)
-option(VMA_BUILD_DOCUMENTATION OFF)
-option(VMA_BUILD_SAMPLES OFF)
-
-add_subdirectory(${VMA_PROJ_PATH})
-
+# Explicitly build VMA as a shared library and link it when building the executable
 set(VMA_INCLUDE_DIRS ${VMA_PROJ_PATH}/include)
+
+add_library(vma SHARED ${CMAKE_SOURCE_DIR}/vma/impl.cpp)
+set_target_properties(vma PROPERTIES CXX_STANDARD 17)
+target_link_libraries(vma vulkan)
+target_include_directories(vma INTERFACE vma)
 
 # GLFW
 set(GLFW_PROJ_PATH "${CMAKE_SOURCE_DIR}/thirdparty/glfw")
@@ -68,7 +65,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
 # Set linked libraries
 set(LIBS ${LIBS}
     vulkan
-    GPUOpen::VulkanMemoryAllocator
+    vma
     glfw
     m
 )
@@ -76,10 +73,10 @@ set(LIBS ${LIBS}
 # Link step (optionally with ASan)
 if (USE_ASAN)
     message("Link config: Address Sanitizer")
-    target_link_libraries(${PROJECT_NAME} ${LIBS} -fsanitize=address)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBS} -fsanitize=address)
 else ()
     message("Link config: Default")
-    target_link_libraries(${PROJECT_NAME} ${LIBS})
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBS})
 endif()
 
 # Copy compile_commands.json to project root for use with language servers (only in Debug mode)

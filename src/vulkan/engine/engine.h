@@ -1,6 +1,8 @@
 #ifndef VKT_VULKAN_ENGINE_H
 #define VKT_VULKAN_ENGINE_H
 
+#include "../vma/helper.h"
+
 #include "../context/context.h"
 #include "../context/present_context.h"
 
@@ -16,6 +18,7 @@ typedef struct {
     VktEngineCreateProps creation_props;
 
     VktVulkanContext vk_context;
+    VmaAllocator allocator;
 
     bool need_to_recreate_swapchain;
     VkExtent2D render_image_extent;
