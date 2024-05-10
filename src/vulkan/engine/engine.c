@@ -118,7 +118,7 @@ int vkt_engine_acquire_next_image(VktEngine *engine, uint32_t *image_index) {
 
     if (vk_acquire_next_result == VK_SUBOPTIMAL_KHR || vk_acquire_next_result == VK_ERROR_OUT_OF_DATE_KHR) {
         // Clean up the present_complete_semaphore that is now in a dangerous state
-        vkt_engine_cleanup_dangerous_semaphore(engine, engine->sync_structures.present_complete_semaphore);
+        // vkt_engine_cleanup_dangerous_semaphore(engine, engine->sync_structures.present_complete_semaphore);
 
         engine->need_to_recreate_swapchain = true;
         return VKT_GENERIC_SUCCESS;
