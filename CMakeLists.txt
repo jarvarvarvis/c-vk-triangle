@@ -13,18 +13,13 @@ endif()
 find_package(Vulkan REQUIRED)
 
 # VulkanMemoryAllocator
-set(VMA_PROJ_PATH "${CMAKE_SOURCE_DIR}/thirdparty/VulkanMemoryAllocator")
-
-# Explicitly build VMA as a shared library and link it when building the executable
+set(VMA_PROJ_PATH ${CMAKE_SOURCE_DIR}/thirdparty/VulkanMemoryAllocator)
 set(VMA_INCLUDE_DIRS ${VMA_PROJ_PATH}/include)
 
-add_library(vma SHARED ${CMAKE_SOURCE_DIR}/vma/impl.cpp)
-set_target_properties(vma PROPERTIES CXX_STANDARD 17)
-target_link_libraries(vma vulkan)
-target_include_directories(vma INTERFACE vma)
+set(VMA_IMPL_FILE ${CMAKE_SOURCE_DIR}/src/lib/vma/impl.cpp)
 
 # GLFW
-set(GLFW_PROJ_PATH "${CMAKE_SOURCE_DIR}/thirdparty/glfw")
+set(GLFW_PROJ_PATH ${CMAKE_SOURCE_DIR}/thirdparty/glfw)
 
 # Set options for glfw building (build as shared library, disable all stuff not
 # strictly necessary for integration)
@@ -48,12 +43,11 @@ set(INCLUDE_DIRS ${INCLUDE_DIRS}
 message("Include directories: ${INCLUDE_DIRS}")
 include_directories(${INCLUDE_DIRS})
 
-# Source and header files
+# Source files
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.c)
-file(GLOB_RECURSE HEADER_FILES ${CMAKE_SOURCE_DIR}/src/*.h)
 
-# Executable
-add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
+# Add the project executable
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${VMA_IMPL_FILE})
 
 # Compile definitions
 target_compile_definitions(${PROJECT_NAME} PUBLIC
@@ -65,7 +59,6 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
 # Set linked libraries
 set(LIBS ${LIBS}
     vulkan
-    vma
     glfw
     m
 )
