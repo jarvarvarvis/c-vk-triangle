@@ -1,6 +1,3 @@
-#define VMA_STATIC_VULKAN_FUNCTIONS 0
-#define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
-
 #define VKT_STRINGIFY(expr) #expr
 
 #define VMA_ASSERT(expr) \
