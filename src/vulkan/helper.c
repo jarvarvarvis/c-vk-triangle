@@ -1,6 +1,6 @@
 #include "helper.h"
 
-VkViewport vkt_helper_viewport_from_extent(VkExtent2D extent) {
+VkViewport vkt_vulkan_helper_viewport_from_extent(VkExtent2D extent) {
     VkViewport viewport;
     viewport.x = 0.f;
     viewport.y = 0.f;
@@ -12,7 +12,7 @@ VkViewport vkt_helper_viewport_from_extent(VkExtent2D extent) {
     return viewport;
 }
 
-VkRect2D vkt_helper_rect2d_from_extent(VkExtent2D extent) {
+VkRect2D vkt_vulkan_helper_rect2d_from_extent(VkExtent2D extent) {
     VkRect2D rect;
     rect.offset.x = 0;
     rect.offset.y = 0;

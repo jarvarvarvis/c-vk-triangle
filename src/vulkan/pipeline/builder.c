@@ -10,13 +10,8 @@ VktPipelineBuilder vkt_pipeline_builder_new() {
     VktPipelineBuilder builder;
     memset(&builder, 0, sizeof(VktPipelineBuilder));
 
-    builder.dynamic_states_len = 0;
-    builder.dynamic_states_cap = 2;
-    builder.dynamic_states = malloc(sizeof(VkDynamicState) * builder.dynamic_states_cap);
-
-    builder.shader_stages_len = 0;
-    builder.shader_stages_cap = 2;
-    builder.shader_stages = malloc(sizeof(VkPipelineShaderStageCreateInfo) * builder.shader_stages_cap);
+    VKT_LIST_HELPER_INIT_LIST(VkDynamicState, builder, dynamic_states, 2);
+    VKT_LIST_HELPER_INIT_LIST(VkPipelineShaderStageCreateInfo, builder, shader_stages, 2);
 
     return builder;
 }
@@ -26,7 +21,7 @@ void vkt_pipeline_builder_set_viewport(VktPipelineBuilder *builder, VkViewport v
 }
 
 void vkt_pipeline_builder_set_viewport_from_extent(VktPipelineBuilder *builder, VkExtent2D extent) {
-    vkt_pipeline_builder_set_viewport(builder, vkt_helper_viewport_from_extent(extent));
+    vkt_pipeline_builder_set_viewport(builder, vkt_vulkan_helper_viewport_from_extent(extent));
 }
 
 void vkt_pipeline_builder_set_scissor(VktPipelineBuilder *builder, VkRect2D scissor) {
@@ -34,18 +29,11 @@ void vkt_pipeline_builder_set_scissor(VktPipelineBuilder *builder, VkRect2D scis
 }
 
 void vkt_pipeline_builder_set_scissor_from_extent(VktPipelineBuilder *builder, VkExtent2D extent) {
-    vkt_pipeline_builder_set_scissor(builder, vkt_helper_rect2d_from_extent(extent));
+    vkt_pipeline_builder_set_scissor(builder, vkt_vulkan_helper_rect2d_from_extent(extent));
 }
 
 void vkt_pipeline_builder_push_dynamic_state(VktPipelineBuilder *builder, VkDynamicState dynamic_state) {
-    // Reallocate the list if necessary
-    if (builder->dynamic_states_len >= builder->dynamic_states_cap) {
-        builder->dynamic_states_cap *= 2;
-        builder->dynamic_states = realloc(builder->dynamic_states, sizeof(VkDynamicState) * builder->dynamic_states_cap);
-    }
-
-    builder->dynamic_states[builder->dynamic_states_len] = dynamic_state;
-    builder->dynamic_states_len++;
+    VKT_LIST_HELPER_PUSH_ELEMENT(VkDynamicState, builder, dynamic_states, 2, dynamic_state);
 }
 
 void vkt_pipeline_builder_set_pipeline_layout(VktPipelineBuilder *builder, VkPipelineLayout pipeline_layout) {
@@ -64,14 +52,7 @@ void vkt_pipeline_builder_push_shader_stage(VktPipelineBuilder *builder, VkShade
 
     info.pName = "main";
 
-    // Reallocate the list if necessary
-    if (builder->shader_stages_len >= builder->shader_stages_cap) {
-        builder->shader_stages_cap *= 2;
-        builder->shader_stages = realloc(builder->shader_stages, sizeof(VkPipelineShaderStageCreateInfo) * builder->shader_stages_cap);
-    }
-
-    builder->shader_stages[builder->shader_stages_len] = info;
-    builder->shader_stages_len++;
+    VKT_LIST_HELPER_PUSH_ELEMENT(VkPipelineShaderStageCreateInfo, builder, shader_stages, 2, info);
 }
 
 void vkt_pipeline_builder_set_vertex_input_state(VktPipelineBuilder *builder) {

@@ -46,13 +46,13 @@ VkInstanceCreateInfo vkt_create_instance_create_info(VkApplicationInfo *app_info
 
     // Log enabled extensions
     c_log(C_LOG_SEVERITY_DEBUG, "Enabled Vulkan extensions:");
-    for (size_t i = 0; i < extension_list->len; ++i) {
+    for (size_t i = 0; i < extension_list->strings_len; ++i) {
         c_log(C_LOG_SEVERITY_DEBUG, "- %s", extension_list->strings[i]);
     }
     printf("\n");
 
     // Set extensions
-    inst_create_info.enabledExtensionCount = extension_list->len;
+    inst_create_info.enabledExtensionCount = extension_list->strings_len;
     inst_create_info.ppEnabledExtensionNames = (const char *const *) extension_list->strings;
 
     return inst_create_info;

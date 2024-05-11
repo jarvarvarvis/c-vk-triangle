@@ -140,10 +140,10 @@ int main() {
             vkt_engine_cmd_begin_main_render_pass(engine, renderpass_args);
             {
                 // Update viewport and scissor (dynamic state)
-                VkViewport viewport = vkt_helper_viewport_from_extent(engine->render_image_extent);
+                VkViewport viewport = vkt_vulkan_helper_viewport_from_extent(engine->render_image_extent);
                 vkCmdSetViewport(engine->main_command_buffer, 0, 1, &viewport);
 
-                VkRect2D scissor = vkt_helper_rect2d_from_extent(engine->render_image_extent);
+                VkRect2D scissor = vkt_vulkan_helper_rect2d_from_extent(engine->render_image_extent);
                 vkCmdSetScissor(engine->main_command_buffer, 0, 1, &scissor);
 
                 vkCmdBindPipeline(engine->main_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, triangle_pipeline);

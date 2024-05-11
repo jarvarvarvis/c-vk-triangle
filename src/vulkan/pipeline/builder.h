@@ -1,6 +1,7 @@
 #ifndef VKT_VULKAN_PIPELINE_BUILDER_H
 #define VKT_VULKAN_PIPELINE_BUILDER_H
 
+#include "../../util/list_helper.h"
 #include "../context/context.h"
 
 #include "vertex_input.h"
@@ -9,13 +10,11 @@ typedef struct {
     VkViewport viewport;
     VkRect2D scissor;
 
-    VkDynamicState *dynamic_states;
-    size_t dynamic_states_len, dynamic_states_cap;
+    VKT_LIST_HELPER_STRUCT_MEMBERS(VkDynamicState, dynamic_states);
 
     VkPipelineLayout pipeline_layout;
 
-    VkPipelineShaderStageCreateInfo *shader_stages;
-    size_t shader_stages_len, shader_stages_cap;
+    VKT_LIST_HELPER_STRUCT_MEMBERS(VkPipelineShaderStageCreateInfo, shader_stages);
 
     VkPipelineVertexInputStateCreateInfo vertex_input_state;
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state;

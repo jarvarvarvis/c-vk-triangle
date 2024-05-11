@@ -3,12 +3,11 @@
 
 #include <vulkan/vulkan.h>
 
-typedef struct {
-    VkVertexInputBindingDescription *bindings;
-    size_t bindings_len, bindings_cap;
+#include "../../util/list_helper.h"
 
-    VkVertexInputAttributeDescription *attributes;
-    size_t attributes_len, attributes_cap;
+typedef struct {
+    VKT_LIST_HELPER_STRUCT_MEMBERS(VkVertexInputBindingDescription, bindings);
+    VKT_LIST_HELPER_STRUCT_MEMBERS(VkVertexInputAttributeDescription, attributes);
 
     VkPipelineVertexInputStateCreateFlags flags;
 } VktVertexInputDescription;
