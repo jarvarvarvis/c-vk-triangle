@@ -12,15 +12,22 @@
 #include "vulkan/engine/commands.h"
 
 #include "vulkan/shader/module.h"
-#include "vulkan/pipeline/builder.h"
-#include "vulkan/pipeline/layout.h"
 #include "vulkan/pipeline/pipeline.h"
+#include "vulkan/pipeline/builder.h"
+#include "vulkan/pipeline/layout_builder.h"
 #include "vulkan/pipeline/vertex_input.h"
 
 #include "triangle/mesh.h"
 
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
+
+int vkt_create_triangle_pipeline_layout(VktEngine *engine, VkPipelineLayout *layout) {
+    VktPipelineLayoutBuilder builder = vkt_pipeline_layout_builder_new();
+
+    VKT_CHECK(vkt_pipeline_layout_builder_build_layout(&engine->vk_context, &builder, layout));
+    return VKT_GENERIC_SUCCESS;
+}
 
 int vkt_create_triangle_pipeline(VktEngine *engine, VkPipelineLayout layout, VkPipeline *pipeline) {
     VktPipelineBuilder builder = vkt_pipeline_builder_new();
@@ -104,7 +111,7 @@ int main() {
 
     // Create pipeline layout and pipeline
     VkPipelineLayout triangle_pipeline_layout;
-    VKT_CHECK(vkt_create_basic_pipeline_layout(&engine->vk_context, &triangle_pipeline_layout));
+    VKT_CHECK(vkt_create_triangle_pipeline_layout(engine, &triangle_pipeline_layout));
     VkPipeline triangle_pipeline;
     VKT_CHECK(vkt_create_triangle_pipeline(engine, triangle_pipeline_layout, &triangle_pipeline));
 

@@ -3,6 +3,7 @@
 
 #include "../context/context.h"
 
+void vkt_destroy_pipeline_layout(VktVulkanContext *context, VkPipelineLayout layout);
 void vkt_destroy_pipeline(VktVulkanContext *context, VkPipeline pipeline);
 
 #endif /* VKT_VULKAN_PIPELINE_H */
