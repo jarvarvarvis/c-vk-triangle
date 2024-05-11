@@ -88,6 +88,22 @@ void vkt_pipeline_builder_set_vertex_input_state(VktPipelineBuilder *builder) {
     builder->vertex_input_state = info;
 }
 
+void vkt_pipeline_builder_set_vertex_input_state_from_description(VktPipelineBuilder *builder, VktVertexInputDescription *description) {
+    VkPipelineVertexInputStateCreateInfo info;
+    memset(&info, 0, sizeof(VkPipelineVertexInputStateCreateInfo));
+
+    info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    info.pNext = NULL;
+
+    info.vertexBindingDescriptionCount = description->bindings_len;
+    info.pVertexBindingDescriptions = description->bindings;
+
+    info.vertexAttributeDescriptionCount = description->attributes_len;
+    info.pVertexAttributeDescriptions = description->attributes;
+
+    builder->vertex_input_state = info;
+}
+
 void vkt_pipeline_builder_set_input_assembly_state(VktPipelineBuilder *builder, VkPrimitiveTopology topology) {
     VkPipelineInputAssemblyStateCreateInfo info;
     memset(&info, 0, sizeof(VkPipelineInputAssemblyStateCreateInfo));

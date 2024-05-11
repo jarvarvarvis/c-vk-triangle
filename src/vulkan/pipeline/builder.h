@@ -3,6 +3,8 @@
 
 #include "../context/context.h"
 
+#include "vertex_input.h"
+
 typedef struct {
     VkViewport viewport;
     VkRect2D scissor;
@@ -36,6 +38,8 @@ void vkt_pipeline_builder_set_pipeline_layout(VktPipelineBuilder *builder, VkPip
 void vkt_pipeline_builder_push_shader_stage(VktPipelineBuilder *builder, VkShaderStageFlagBits stage, VkShaderModule module);
 
 void vkt_pipeline_builder_set_vertex_input_state(VktPipelineBuilder *builder);
+void vkt_pipeline_builder_set_vertex_input_state_from_description(VktPipelineBuilder *builder, VktVertexInputDescription *description);
+
 void vkt_pipeline_builder_set_input_assembly_state(VktPipelineBuilder *builder, VkPrimitiveTopology topology);
 void vkt_pipeline_builder_set_rasterization_state(VktPipelineBuilder *builder, VkPolygonMode polygon_mode);
 void vkt_pipeline_builder_set_multisampling_state(VktPipelineBuilder *builder, VkSampleCountFlagBits samples);

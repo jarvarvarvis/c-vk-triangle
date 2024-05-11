@@ -15,6 +15,9 @@
 #include "vulkan/pipeline/builder.h"
 #include "vulkan/pipeline/layout.h"
 #include "vulkan/pipeline/pipeline.h"
+#include "vulkan/pipeline/vertex_input.h"
+
+#include "triangle/mesh.h"
 
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
@@ -38,7 +41,9 @@ int vkt_create_triangle_pipeline(VktEngine *engine, VkPipelineLayout layout, VkP
     vkt_pipeline_builder_push_shader_stage(&builder, VK_SHADER_STAGE_VERTEX_BIT, vert_module);
     vkt_pipeline_builder_push_shader_stage(&builder, VK_SHADER_STAGE_FRAGMENT_BIT, frag_module);
 
-    vkt_pipeline_builder_set_vertex_input_state(&builder);
+    VktVertexInputDescription triangle_input_description = vkt_triangle_mesh_get_input_description();
+    vkt_pipeline_builder_set_vertex_input_state_from_description(&builder, &triangle_input_description);
+
     vkt_pipeline_builder_set_input_assembly_state(&builder, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
     vkt_pipeline_builder_set_rasterization_state(&builder, VK_POLYGON_MODE_FILL);
     vkt_pipeline_builder_set_multisampling_state(&builder, VK_SAMPLE_COUNT_1_BIT);
@@ -49,6 +54,8 @@ int vkt_create_triangle_pipeline(VktEngine *engine, VkPipelineLayout layout, VkP
 
     vkt_destroy_shader_module(&engine->vk_context, vert_module);
     vkt_destroy_shader_module(&engine->vk_context, frag_module);
+
+    vkt_destroy_vertex_input_description(&triangle_input_description);
 
     return result;
 }
@@ -90,6 +97,10 @@ int main() {
 
     // Set resize callback
     glfwSetWindowSizeCallback(window, vkt_on_window_resize);
+
+    // Create triangle mesh
+    VktTriangleMesh triangle_mesh;
+    VKT_CHECK(vkt_create_triangle_mesh(engine, &triangle_mesh));
 
     // Create pipeline layout and pipeline
     VkPipelineLayout triangle_pipeline_layout;
@@ -135,9 +146,10 @@ int main() {
                 VkRect2D scissor = vkt_helper_rect2d_from_extent(engine->render_image_extent);
                 vkCmdSetScissor(engine->main_command_buffer, 0, 1, &scissor);
 
-                // Render using the triangle pipeline
                 vkCmdBindPipeline(engine->main_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, triangle_pipeline);
-                vkCmdDraw(engine->main_command_buffer, 3, 1, 0, 0);
+                VkDeviceSize offset = 0;
+                vkCmdBindVertexBuffers(engine->main_command_buffer, 0, 1, &triangle_mesh.vertex_buffer.buffer, &offset);
+                vkCmdDraw(engine->main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
             }
             vkt_engine_cmd_end_main_render_pass(engine);
         }
@@ -151,8 +163,10 @@ int main() {
     VKT_CHECK(vkt_engine_wait_on_present_queue(engine));
 
     // Clean up
+    vkt_destroy_triangle_mesh(engine, &triangle_mesh);
     vkt_destroy_pipeline(&engine->vk_context, triangle_pipeline);
     vkt_destroy_pipeline_layout(&engine->vk_context, triangle_pipeline_layout);
+
     vkt_destroy_engine(engine);
     free(engine);
 
