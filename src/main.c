@@ -1,10 +1,9 @@
-#include "lib/lib_impls.h"
-#include "linmath.h/linmath.h"
-
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <unistd.h>
+
+#include "util/math.h"
 
 #include "vulkan/common.h"
 #include "vulkan/helper.h"
@@ -171,21 +170,32 @@ int main() {
 
                 // Compute push constants and upload
                 VktTrianglePushConstants push_constants;
+
+                // Projection matrix
+                float fov = 60.0;
+                float aspect = engine->render_image_extent.width / (float)engine->render_image_extent.height;
+                mat4x4 projection; mat4x4_perspective(projection, vkt_math_degrees_to_radians(fov), aspect, 0.1, 100.0);
+
+                // View matrix
+                mat4x4 view; mat4x4_translate(view, 0.0, 0.0, -2.0);
+
+                // Model matrix
                 float progress = frame_counter / (float)MAX_FRAMES;
                 float angle = progress * 2.0 * M_PI;
                 float distance = 0.5f;
 
-                vec3 rotate_axis_Z = { 0.0, 0.0, 1.0 };
-                quat rotation_quat_Z; quat_rotate(rotation_quat_Z, angle, rotate_axis_Z);
-                mat4x4 rotation_Z; mat4x4_from_quat(rotation_Z, rotation_quat_Z);
+                vec3 rotate_axis = { 1.0, 1.0, 1.0 }; vec3_norm(rotate_axis, rotate_axis);
+                quat rotation_quat; quat_rotate(rotation_quat, angle, rotate_axis);
+                mat4x4 rotation_mat; mat4x4_from_quat(rotation_mat, rotation_quat);
 
                 mat4x4 rotation; mat4x4_identity(rotation);
-                mat4x4_mul(rotation, rotation, rotation_Z);
+                mat4x4_mul(rotation, rotation, rotation_mat);
 
-                mat4x4 translation; mat4x4_translate(translation, distance * sinf(angle), distance * cosf(angle), 0.0);
+                mat4x4 model; mat4x4_dup(model, rotation);
 
-                mat4x4_identity(push_constants.render_matrix);
-                mat4x4_mul(push_constants.render_matrix, translation, rotation);
+                // Calculate final matrix and upload
+                mat4x4 view_model; mat4x4_mul(view_model, view, model);
+                mat4x4_mul(push_constants.render_matrix, projection, view_model);
 
                 vkCmdPushConstants(
                     engine->main_command_buffer,
