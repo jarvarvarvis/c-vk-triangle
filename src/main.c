@@ -165,25 +165,34 @@ int main() {
                 vkCmdSetScissor(engine->main_command_buffer, 0, 1, &scissor);
 
                 vkCmdBindPipeline(engine->main_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, triangle_pipeline);
+
                 VkDeviceSize offset = 0;
                 vkCmdBindVertexBuffers(engine->main_command_buffer, 0, 1, &triangle_mesh.vertex_buffer.buffer, &offset);
 
                 // Compute push constants and upload
                 VktTrianglePushConstants push_constants;
-                mat4x4 model; mat4x4_identity(model);
                 float progress = frame_counter / (float)MAX_FRAMES;
                 float angle = progress * 2.0 * M_PI;
-                float distance = 0.5;
-                mat4x4_translate(model, distance * sinf(angle), distance * cosf(angle), 0.0);
-                mat4x4_rotate(model, model, 0.0, 0.0, 1.0, angle);
+                float distance = 0.5f;
 
-                mat4x4_dup(push_constants.render_matrix, model);
+                vec3 rotate_axis_Z = { 0.0, 0.0, 1.0 };
+                quat rotation_quat_Z; quat_rotate(rotation_quat_Z, angle, rotate_axis_Z);
+                mat4x4 rotation_Z; mat4x4_from_quat(rotation_Z, rotation_quat_Z);
+
+                mat4x4 rotation; mat4x4_identity(rotation);
+                mat4x4_mul(rotation, rotation, rotation_Z);
+
+                mat4x4 translation; mat4x4_translate(translation, distance * sinf(angle), distance * cosf(angle), 0.0);
+
+                mat4x4_identity(push_constants.render_matrix);
+                mat4x4_mul(push_constants.render_matrix, translation, rotation);
 
                 vkCmdPushConstants(
                     engine->main_command_buffer,
                     triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &push_constants
                 );
 
+                // Finally, draw
                 vkCmdDraw(engine->main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
             }
             vkt_engine_cmd_end_main_render_pass(engine);
