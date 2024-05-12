@@ -80,6 +80,11 @@ int vkt_create_present_context_swapchain_images(VktVulkanContext *context, VktPr
     return VKT_GENERIC_SUCCESS;
 }
 
+int vkt_create_present_context_depth_image(VktVulkanContext *context, VktPresentContext *present_context) {
+    VKT_CHECK(vkt_create_depth_image(context, present_context->image_size, &present_context->depth_image));
+    return VKT_GENERIC_SUCCESS;
+}
+
 int vkt_create_present_context_render_pass(VktVulkanContext *context, VktPresentContext *present_context) {
     memset(&present_context->main_render_pass, 0, sizeof(VkRenderPass));
 
@@ -167,6 +172,7 @@ void vkt_destroy_present_context_swapchain_and_dependents(VktVulkanContext *cont
 }
 
 void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context) {
+    vkt_destroy_depth_image(context, &present_context->depth_image);
     vkt_destroy_present_context_swapchain_and_dependents(context, present_context);
 
     vkDestroySurfaceKHR(context->instance.vk_instance, present_context->surface, NULL);

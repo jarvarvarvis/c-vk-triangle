@@ -15,12 +15,6 @@ int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateP
         return VKT_GENERIC_FAILURE;
     }
 
-    // Create VMA allocator
-    if (vkt_vma_helper_create_allocator(&engine->vk_context, &engine->allocator) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create VMA allocator!");
-        return VKT_GENERIC_FAILURE;
-    }
-
     // Create synchronization structures
     if (vkt_create_engine_sync_structures(&engine->vk_context, &engine->sync_structures) != VKT_GENERIC_SUCCESS) {
         c_log(C_LOG_SEVERITY_ERROR, "Failed to create synchronization structures for the engine!");
@@ -44,6 +38,12 @@ int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateP
 
     // Create swapchain images
     if (vkt_create_present_context_swapchain_images(&engine->vk_context, &engine->present_context) != VKT_GENERIC_SUCCESS) {
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain for the window surface!");
+        return VKT_GENERIC_FAILURE;
+    }
+
+    // Create depth image
+    if (vkt_create_present_context_depth_image(&engine->vk_context, &engine->present_context) != VKT_GENERIC_SUCCESS) {
         c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain for the window surface!");
         return VKT_GENERIC_FAILURE;
     }
@@ -258,8 +258,6 @@ int vkt_engine_wait_on_present_queue(VktEngine *engine) {
 }
 
 void vkt_destroy_engine(VktEngine *engine) {
-    vmaDestroyAllocator(engine->allocator);
-
     vkt_free_command_buffers(&engine->vk_context, engine->main_command_pool, &engine->main_command_buffer, 1);
     vkt_destroy_command_pool(&engine->vk_context, engine->main_command_pool);
 

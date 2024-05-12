@@ -8,6 +8,8 @@
 
 #include "context.h"
 
+#include "../depth/depth_image.h"
+
 #include "../surface/surface_info.h"
 
 #include "../swapchain/swapchain.h"
@@ -22,6 +24,8 @@ typedef struct {
     VkSwapchainKHR swapchain;
     VktSwapchainImages swapchain_images;
 
+    VktDepthImage depth_image;
+
     VkExtent2D image_size;
 
     VkRenderPass main_render_pass;
@@ -31,6 +35,7 @@ typedef struct {
 int vkt_create_present_context(VktVulkanContext *context, VktPresentContext *present_context, GLFWwindow *window);
 int vkt_create_present_context_swapchain(VktVulkanContext *context, VktPresentContext *present_context, VktSwapchainCreateProps props);
 int vkt_create_present_context_swapchain_images(VktVulkanContext *context, VktPresentContext *present_context);
+int vkt_create_present_context_depth_image(VktVulkanContext *context, VktPresentContext *present_context);
 int vkt_create_present_context_render_pass(VktVulkanContext *context, VktPresentContext *present_context);
 int vkt_create_present_context_framebuffers(VktVulkanContext *context, VktPresentContext *present_context);
 

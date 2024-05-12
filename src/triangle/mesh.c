@@ -53,13 +53,13 @@ int vkt_create_triangle_mesh(VktEngine *engine, VktTriangleMesh *mesh) {
     memcpy(mesh->vertices[2].color, (vec3) { 0.0, 0.0, 1.0 }, sizeof(float)*3);
 
     // Create vertex buffer and upload data
-    VKT_CHECK(vkt_allocate_buffer(engine, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, vertex_allocation_size, &mesh->vertex_buffer));
-    VKT_CHECK(vkt_upload_to_buffer(engine, &mesh->vertex_buffer, mesh->vertices, vertex_allocation_size));
+    VKT_CHECK(vkt_allocate_buffer_for_uploads(&engine->vk_context, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, vertex_allocation_size, &mesh->vertex_buffer));
+    VKT_CHECK(vkt_upload_to_buffer(&engine->vk_context, &mesh->vertex_buffer, mesh->vertices, vertex_allocation_size));
 
     return VKT_GENERIC_SUCCESS;
 }
 
 void vkt_destroy_triangle_mesh(VktEngine *engine, VktTriangleMesh *mesh) {
-    vkt_destroy_buffer(engine, &mesh->vertex_buffer);
+    vkt_destroy_buffer(&engine->vk_context, &mesh->vertex_buffer);
     free(mesh->vertices);
 }

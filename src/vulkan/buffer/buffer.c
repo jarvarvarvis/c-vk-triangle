@@ -2,7 +2,7 @@
 
 #include "../common.h"
 
-int vkt_allocate_buffer(VktEngine *engine, VkBufferUsageFlags usage, size_t size, VktAllocatedBuffer *buffer) {
+int vkt_allocate_buffer_for_uploads(VktVulkanContext *context, VkBufferUsageFlags usage, size_t size, VktAllocatedBuffer *buffer) {
     memset(buffer, 0, sizeof(VktAllocatedBuffer));
 
     // Create buffer info
@@ -26,7 +26,7 @@ int vkt_allocate_buffer(VktEngine *engine, VkBufferUsageFlags usage, size_t size
 
     // Create the buffer
     VKT_CHECK(vmaCreateBuffer(
-        engine->allocator,
+        context->allocator,
         &buffer_info,
         &alloc_info,
         &buffer->buffer,
@@ -36,17 +36,17 @@ int vkt_allocate_buffer(VktEngine *engine, VkBufferUsageFlags usage, size_t size
     return VKT_GENERIC_SUCCESS;
 }
 
-int vkt_upload_to_buffer(VktEngine *engine, VktAllocatedBuffer *buffer, void *data, size_t size) {
+int vkt_upload_to_buffer(VktVulkanContext *context, VktAllocatedBuffer *buffer, void *data, size_t size) {
     void *mapped_ptr;
-    VKT_CHECK(vmaMapMemory(engine->allocator, buffer->allocation, &mapped_ptr));
+    VKT_CHECK(vmaMapMemory(context->allocator, buffer->allocation, &mapped_ptr));
 
     memcpy(mapped_ptr, data, size);
 
-    vmaUnmapMemory(engine->allocator, buffer->allocation);
+    vmaUnmapMemory(context->allocator, buffer->allocation);
 
     return VKT_GENERIC_SUCCESS;
 }
 
-void vkt_destroy_buffer(VktEngine *engine, VktAllocatedBuffer *buffer) {
-    vmaDestroyBuffer(engine->allocator, buffer->buffer, buffer->allocation);
+void vkt_destroy_buffer(VktVulkanContext *context, VktAllocatedBuffer *buffer) {
+    vmaDestroyBuffer(context->allocator, buffer->buffer, buffer->allocation);
 }
