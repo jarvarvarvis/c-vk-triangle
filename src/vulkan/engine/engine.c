@@ -17,7 +17,7 @@ int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateP
 
     // Create synchronization structures
     if (vkt_create_engine_sync_structures(&engine->vk_context, &engine->sync_structures) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create synchronization structures for the engine!");
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create engine synchronization structures!");
         return VKT_GENERIC_FAILURE;
     }
 
@@ -38,13 +38,13 @@ int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateP
 
     // Create swapchain images
     if (vkt_create_present_context_swapchain_images(&engine->vk_context, &engine->present_context) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain for the window surface!");
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain images!");
         return VKT_GENERIC_FAILURE;
     }
 
     // Create depth image
     if (vkt_create_present_context_depth_image(&engine->vk_context, &engine->present_context) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create swapchain for the window surface!");
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create depth image!");
         return VKT_GENERIC_FAILURE;
     }
 
@@ -56,7 +56,7 @@ int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateP
 
     // Create framebuffers
     if (vkt_create_present_context_framebuffers(&engine->vk_context, &engine->present_context) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to create render pass!");
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to create framebuffers!");
         return VKT_GENERIC_FAILURE;
     }
 
@@ -68,7 +68,7 @@ int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateP
 
     // Create test command buffer
     if (vkt_allocate_primary_command_buffers(&engine->vk_context, engine->main_command_pool, &engine->main_command_buffer, 1) != VKT_GENERIC_SUCCESS) {
-        c_log(C_LOG_SEVERITY_ERROR, "Failed to allocate test command buffer!");
+        c_log(C_LOG_SEVERITY_ERROR, "Failed to allocate main command buffer!");
         return VKT_GENERIC_FAILURE;
     }
 
