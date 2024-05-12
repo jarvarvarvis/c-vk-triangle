@@ -1,4 +1,5 @@
 #include "lib/lib_impls.h"
+#include "linmath.h/linmath.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -22,10 +23,17 @@
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
 
+typedef struct {
+    mat4x4 render_matrix;
+} VktTrianglePushConstants;
+
 int vkt_create_triangle_pipeline_layout(VktEngine *engine, VkPipelineLayout *layout) {
     VktPipelineLayoutBuilder builder = vkt_pipeline_layout_builder_new();
 
+    vkt_pipeline_layout_builder_push_push_constant(&builder, 0, sizeof(VktTrianglePushConstants), VK_SHADER_STAGE_VERTEX_BIT);
+
     VKT_CHECK(vkt_pipeline_layout_builder_build_layout(&engine->vk_context, &builder, layout));
+    vkt_pipeline_layout_builder_destroy(&builder);
     return VKT_GENERIC_SUCCESS;
 }
 
@@ -115,6 +123,9 @@ int main() {
     VkPipeline triangle_pipeline;
     VKT_CHECK(vkt_create_triangle_pipeline(engine, triangle_pipeline_layout, &triangle_pipeline));
 
+    const size_t MAX_FRAMES = 200;
+    size_t frame_counter = 0;
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -156,6 +167,23 @@ int main() {
                 vkCmdBindPipeline(engine->main_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, triangle_pipeline);
                 VkDeviceSize offset = 0;
                 vkCmdBindVertexBuffers(engine->main_command_buffer, 0, 1, &triangle_mesh.vertex_buffer.buffer, &offset);
+
+                // Compute push constants and upload
+                VktTrianglePushConstants push_constants;
+                mat4x4 model; mat4x4_identity(model);
+                float progress = frame_counter / (float)MAX_FRAMES;
+                float angle = progress * 2.0 * M_PI;
+                float distance = 0.5;
+                mat4x4_translate(model, distance * sinf(angle), distance * cosf(angle), 0.0);
+                mat4x4_rotate(model, model, 0.0, 0.0, 1.0, angle);
+
+                mat4x4_dup(push_constants.render_matrix, model);
+
+                vkCmdPushConstants(
+                    engine->main_command_buffer,
+                    triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &push_constants
+                );
+
                 vkCmdDraw(engine->main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
             }
             vkt_engine_cmd_end_main_render_pass(engine);
@@ -164,6 +192,9 @@ int main() {
         VKT_CHECK(vkt_engine_submit_main_command_buffer_to_present_queue(engine));
 
         VKT_CHECK(vkt_engine_present_queue(engine, swapchain_image_index));
+
+        frame_counter++;
+        frame_counter %= MAX_FRAMES;
     }
 
     // Wait on the present queue before cleaning up (so that all commands are finished)

@@ -43,9 +43,9 @@ int vkt_create_triangle_mesh(VktEngine *engine, VktTriangleMesh *mesh) {
     mesh->vertices = malloc(vertex_allocation_size);
 
     // Vertex position
-    memcpy(mesh->vertices[0].position, (vec3) {  1.0, 1.0, 0.0 }, sizeof(float)*3);
-    memcpy(mesh->vertices[1].position, (vec3) { -1.0, 1.0, 0.0 }, sizeof(float)*3);
-    memcpy(mesh->vertices[2].position, (vec3) {  0.0, 0.0, 0.0 }, sizeof(float)*3);
+    memcpy(mesh->vertices[0].position, (vec3) {  0.5,  0.5, 0.0 }, sizeof(float)*3);
+    memcpy(mesh->vertices[1].position, (vec3) { -0.5,  0.5, 0.0 }, sizeof(float)*3);
+    memcpy(mesh->vertices[2].position, (vec3) {  0.0, -0.5, 0.0 }, sizeof(float)*3);
 
     // Vertex colors
     memcpy(mesh->vertices[0].color, (vec3) { 1.0, 0.0, 0.0 }, sizeof(float)*3);

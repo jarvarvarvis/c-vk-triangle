@@ -5,7 +5,12 @@ layout (location = 1) in vec3 v_Color;
 
 layout (location = 0) out vec3 vertex_color;
 
+layout (push_constant) uniform constants
+{
+	mat4 render_matrix;
+} PushConstants;
+
 void main() {
-	gl_Position = vec4(v_Position, 1.0f);
+	gl_Position = PushConstants.render_matrix * vec4(v_Position, 1.0f);
     vertex_color = v_Color;
 }
