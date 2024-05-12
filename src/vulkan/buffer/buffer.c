@@ -19,7 +19,10 @@ int vkt_allocate_buffer(VktEngine *engine, VkBufferUsageFlags usage, size_t size
     VmaAllocationCreateInfo alloc_info;
     memset(&alloc_info, 0, sizeof(VmaAllocationCreateInfo));
 
-    alloc_info.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+    alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
+
+    // This is a buffer that we sequentially copy data into
+    alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
 
     // Create the buffer
     VKT_CHECK(vmaCreateBuffer(
