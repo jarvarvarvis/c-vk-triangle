@@ -19,17 +19,11 @@ int vkt_create_depth_image(VktVulkanContext *context, VkExtent2D initial_extent,
     );
     VKT_CHECK(vkt_allocate_gpu_only_image(context, image_info, &depth_image->image));
 
-    c_log(C_LOG_SEVERITY_DEBUG, "Created depth image with size %dx%d and format %s",
-        depth_image_extent.width, depth_image_extent.height, string_VkFormat(depth_image->format));
-
     // Create the image view
     VkImageViewCreateInfo image_view_info = vkt_get_2d_image_view_create_info(
         depth_image->format, depth_image->image.image, VK_IMAGE_ASPECT_DEPTH_BIT
     );
     VKT_CHECK(vkt_create_image_view(context, image_view_info, &depth_image->image_view));
-
-    c_log(C_LOG_SEVERITY_DEBUG, "Created depth image view with format %s", string_VkFormat(depth_image->format));
-    printf("\n");
 
     return VKT_GENERIC_SUCCESS;
 }

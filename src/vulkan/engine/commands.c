@@ -2,6 +2,30 @@
 
 #include <c_log/c_log.h>
 
+VktCmdBeginRenderPassArgs vkt_create_cmd_begin_render_pass_args(uint32_t swapchain_image_index) {
+    VktCmdBeginRenderPassArgs args;
+    memset(&args, 0, sizeof(VktCmdBeginRenderPassArgs));
+
+    args.has_color_clear_value = false;
+    args.has_depth_stencil_clear_value = false;
+    args.swapchain_image_index = swapchain_image_index;
+
+    return args;
+}
+
+void vkt_set_cmd_begin_render_pass_args_clear_value_color(VktCmdBeginRenderPassArgs *args, float color[4]) {
+    args->has_color_clear_value = true;
+    for (int i = 0; i < 4; ++i) {
+        args->color_clear_value.color.float32[i] = color[i];
+    }
+}
+
+void vkt_set_cmd_begin_render_pass_args_clear_value_depth_stencil(VktCmdBeginRenderPassArgs *args, float depth, uint32_t stencil) {
+    args->has_depth_stencil_clear_value = true;
+    args->depth_stencil_clear_value.depthStencil.depth = depth;
+    args->depth_stencil_clear_value.depthStencil.stencil = stencil;
+}
+
 void vkt_engine_cmd_begin_main_render_pass(VktEngine *engine, VktCmdBeginRenderPassArgs args) {
     VkRenderPassBeginInfo render_pass_info;
 
@@ -25,15 +49,22 @@ void vkt_engine_cmd_begin_main_render_pass(VktEngine *engine, VktCmdBeginRenderP
     render_pass_info.renderPass = engine->present_context.main_render_pass;
     render_pass_info.framebuffer = engine->present_context.framebuffers.framebuffers[args.swapchain_image_index];
 
-    // Connect clear value (if set)
-    if (args.has_clear_value) {
-        render_pass_info.clearValueCount = 1;
-        render_pass_info.pClearValues = &args.clear_value;
-    } else {
-        render_pass_info.clearValueCount = 0;
-        render_pass_info.pClearValues = NULL;
+    // Connect clear values (if set)
+    size_t clear_value_count = 0;
+    VkClearValue clear_values[2];
+    memset(clear_values, 0, sizeof(clear_values));
+
+    if (args.has_color_clear_value) {
+        clear_values[clear_value_count++] = args.color_clear_value;
+    }
+    if (args.has_depth_stencil_clear_value) {
+        clear_values[clear_value_count++] = args.depth_stencil_clear_value;
     }
 
+    render_pass_info.clearValueCount = clear_value_count;
+    render_pass_info.pClearValues = clear_values;
+
+    // Begin the render pass
     vkCmdBeginRenderPass(engine->main_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 }
 

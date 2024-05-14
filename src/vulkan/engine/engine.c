@@ -238,6 +238,7 @@ int vkt_engine_recreate_swapchain_if_necessary(VktEngine *engine) {
     engine->present_context.swapchain = new_swapchain;
 
     // Create new stuff
+    VKT_CHECK(vkt_create_present_context_depth_image(&engine->vk_context, &engine->present_context));
     VKT_CHECK(vkt_create_present_context_swapchain_images(&engine->vk_context, &engine->present_context));
     VKT_CHECK(vkt_create_present_context_render_pass(&engine->vk_context, &engine->present_context));
     VKT_CHECK(vkt_create_present_context_framebuffers(&engine->vk_context, &engine->present_context));

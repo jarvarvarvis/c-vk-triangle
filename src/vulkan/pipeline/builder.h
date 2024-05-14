@@ -1,7 +1,10 @@
 #ifndef VKT_VULKAN_PIPELINE_BUILDER_H
 #define VKT_VULKAN_PIPELINE_BUILDER_H
 
+#include <stdbool.h>
+
 #include "../../util/list_helper.h"
+
 #include "../context/context.h"
 
 #include "vertex_input.h"
@@ -21,6 +24,7 @@ typedef struct {
     VkPipelineRasterizationStateCreateInfo rasterization_state;
     VkPipelineMultisampleStateCreateInfo multisampling_state;
     VkPipelineColorBlendAttachmentState color_blend_attachment_state;
+    VkPipelineDepthStencilStateCreateInfo depth_stencil_state;
 } VktPipelineBuilder;
 
 VktPipelineBuilder vkt_pipeline_builder_new();
@@ -43,6 +47,7 @@ void vkt_pipeline_builder_set_input_assembly_state(VktPipelineBuilder *builder, 
 void vkt_pipeline_builder_set_rasterization_state(VktPipelineBuilder *builder, VkPolygonMode polygon_mode);
 void vkt_pipeline_builder_set_multisampling_state(VktPipelineBuilder *builder, VkSampleCountFlagBits samples);
 void vkt_pipeline_builder_set_color_blend_attachment_state(VktPipelineBuilder *builder);
+void vkt_pipeline_builder_set_depth_stencil_state(VktPipelineBuilder *builder, bool depth_test, bool depth_write, VkCompareOp compare_op);
 
 int vkt_pipeline_builder_build_pipeline(VktVulkanContext *context, VktPipelineBuilder *builder, VkRenderPass pass, VkPipeline *pipeline);
 

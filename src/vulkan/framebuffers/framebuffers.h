@@ -3,6 +3,7 @@
 
 #include "../context/context.h"
 
+#include "../depth/depth_image.h"
 #include "../swapchain/images.h"
 
 typedef struct {
@@ -13,6 +14,7 @@ typedef struct {
 int vkt_create_framebuffers(
     VktVulkanContext *context,
     VktSwapchainImages *swapchain_images,
+    VktDepthImage *depth_image,
     VkRenderPass render_pass,
     VkExtent2D image_extent,
     VktFramebuffers *framebuffers

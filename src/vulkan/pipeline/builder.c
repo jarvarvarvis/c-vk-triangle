@@ -154,6 +154,24 @@ void vkt_pipeline_builder_set_color_blend_attachment_state(VktPipelineBuilder *b
     builder->color_blend_attachment_state = state;
 }
 
+void vkt_pipeline_builder_set_depth_stencil_state(VktPipelineBuilder *builder, bool depth_test, bool depth_write, VkCompareOp compare_op) {
+    VkPipelineDepthStencilStateCreateInfo info;
+    memset(&info, 0, sizeof(VkPipelineDepthStencilStateCreateInfo));
+
+    info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    info.pNext = NULL;
+
+    info.depthTestEnable = depth_test ? VK_TRUE : VK_FALSE;
+    info.depthWriteEnable = depth_write ? VK_TRUE : VK_FALSE;
+    info.depthCompareOp = depth_test ? compare_op : VK_COMPARE_OP_ALWAYS;
+    info.depthBoundsTestEnable = VK_FALSE;
+    info.minDepthBounds = 0.0f;
+    info.maxDepthBounds = 1.0f;
+    info.stencilTestEnable = VK_FALSE;
+
+    builder->depth_stencil_state = info;
+}
+
 int vkt_pipeline_builder_build_pipeline(VktVulkanContext *context, VktPipelineBuilder *builder, VkRenderPass pass, VkPipeline *pipeline) {
     // Create viewport state from stored viewport and scissor
     VkPipelineViewportStateCreateInfo viewport_state;
@@ -205,6 +223,7 @@ int vkt_pipeline_builder_build_pipeline(VktVulkanContext *context, VktPipelineBu
     pipeline_info.pRasterizationState = &builder->rasterization_state;
     pipeline_info.pMultisampleState = &builder->multisampling_state;
     pipeline_info.pColorBlendState = &color_blend_state;
+    pipeline_info.pDepthStencilState = &builder->depth_stencil_state;
 
     pipeline_info.pDynamicState = &dynamic_state;
 

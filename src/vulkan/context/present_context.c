@@ -91,7 +91,10 @@ int vkt_create_present_context_render_pass(VktVulkanContext *context, VktPresent
     // Create the render pass
     VKT_CHECK(vkt_create_default_renderpass(
         context,
+        // Use the first available surface format for the color attachment
         present_context->surface_info.surface_formats[0].format,
+        // Use the format of the depth image for the depth attachment
+        present_context->depth_image.format,
         &present_context->main_render_pass
     ));
 
@@ -105,6 +108,7 @@ int vkt_create_present_context_framebuffers(VktVulkanContext *context, VktPresen
     VKT_CHECK(vkt_create_framebuffers(
         context,
         &present_context->swapchain_images,
+        &present_context->depth_image,
         present_context->main_render_pass,
         vkt_present_context_get_latest_surface_extent(present_context),
         &present_context->framebuffers
@@ -166,13 +170,13 @@ VkExtent2D vkt_present_context_get_latest_surface_extent(VktPresentContext *pres
 void vkt_destroy_present_context_swapchain_and_dependents(VktVulkanContext *context, VktPresentContext *present_context) {
     vkt_destroy_framebuffers(context, &present_context->framebuffers);
     vkt_destroy_renderpass(context, present_context->main_render_pass);
+    vkt_destroy_depth_image(context, &present_context->depth_image);
 
     vkt_destroy_swapchain_images(context, &present_context->swapchain_images);
     vkt_destroy_swapchain(context, present_context->swapchain);
 }
 
 void vkt_destroy_present_context(VktVulkanContext *context, VktPresentContext *present_context) {
-    vkt_destroy_depth_image(context, &present_context->depth_image);
     vkt_destroy_present_context_swapchain_and_dependents(context, present_context);
 
     vkDestroySurfaceKHR(context->instance.vk_instance, present_context->surface, NULL);

@@ -62,6 +62,7 @@ int vkt_create_triangle_pipeline(VktEngine *engine, VkPipelineLayout layout, VkP
     vkt_pipeline_builder_set_rasterization_state(&builder, VK_POLYGON_MODE_FILL);
     vkt_pipeline_builder_set_multisampling_state(&builder, VK_SAMPLE_COUNT_1_BIT);
     vkt_pipeline_builder_set_color_blend_attachment_state(&builder);
+    vkt_pipeline_builder_set_depth_stencil_state(&builder, true, true, VK_COMPARE_OP_LESS_OR_EQUAL);
 
     int result = vkt_pipeline_builder_build_pipeline(&engine->vk_context, &builder, engine->present_context.main_render_pass, pipeline);
     vkt_pipeline_builder_destroy(&builder);
@@ -145,13 +146,9 @@ int main() {
         VKT_CHECK(vkt_engine_begin_main_command_buffer(engine));
         {
             // Create arguments for begin renderpass command
-            VktCmdBeginRenderPassArgs renderpass_args;
-            renderpass_args.has_clear_value = true;
-            float clear_color[4] = { 0.25, 0.2, 0.25, 1.0 };
-            for (int i = 0; i < 4; ++i) {
-                renderpass_args.clear_value.color.float32[i] = clear_color[i];
-            }
-            renderpass_args.swapchain_image_index = swapchain_image_index;
+            VktCmdBeginRenderPassArgs renderpass_args = vkt_create_cmd_begin_render_pass_args(swapchain_image_index);
+            vkt_set_cmd_begin_render_pass_args_clear_value_color(&renderpass_args, (float[4]) {0.25, 0.15, 0.35, 1.0});
+            vkt_set_cmd_begin_render_pass_args_clear_value_depth_stencil(&renderpass_args, 1.0, 0);
 
             // Begin and then end the render pass (to perform the image layout transition)
             vkt_engine_cmd_begin_main_render_pass(engine, renderpass_args);
@@ -203,6 +200,18 @@ int main() {
                 );
 
                 // Finally, draw
+                vkCmdDraw(engine->main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
+
+                // Draw another triangle to test depth
+                mat4x4_translate_in_place(model, 0.0, 0.0, -0.5);
+                mat4x4_identity(view_model); mat4x4_mul(view_model, view, model);
+                mat4x4_mul(push_constants.render_matrix, projection, view_model);
+
+                vkCmdPushConstants(
+                    engine->main_command_buffer,
+                    triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &push_constants
+                );
+
                 vkCmdDraw(engine->main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
             }
             vkt_engine_cmd_end_main_render_pass(engine);

@@ -5,7 +5,8 @@
 
 int vkt_create_default_renderpass(
     VktVulkanContext *context,
-    VkFormat format,
+    VkFormat color_format,
+    VkFormat depth_format,
     VkRenderPass *renderpass
 );
 
