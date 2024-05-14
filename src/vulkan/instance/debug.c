@@ -44,7 +44,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL vkt_debug_callback(
         vkt_string_VkDebugUtilsMessageSeverityFlagBitsEXT(message_severity),
         vkt_string_VkDebugUtilsMessageTypeFlagBitsEXT(message_type)
     );
-	c_log(C_LOG_SEVERITY_DEBUG, "%s", callback_data->pMessage);
+	c_log(C_LOG_SEVERITY_DEBUG, "%s\n", callback_data->pMessage);
 	return VK_FALSE;
 }
 
