@@ -11,69 +11,14 @@
 #include "vulkan/engine/engine.h"
 #include "vulkan/engine/commands.h"
 
-#include "vulkan/shader/module.h"
 #include "vulkan/pipeline/pipeline.h"
-#include "vulkan/pipeline/builder.h"
-#include "vulkan/pipeline/layout_builder.h"
-#include "vulkan/pipeline/vertex_input.h"
 
 #include "triangle/mesh.h"
+#include "triangle/pipeline.h"
+#include "triangle/push_constants.h"
 
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
-
-typedef struct {
-    mat4x4 render_matrix;
-} VktTrianglePushConstants;
-
-int vkt_create_triangle_pipeline_layout(VktEngine *engine, VkPipelineLayout *layout) {
-    VktPipelineLayoutBuilder builder = vkt_pipeline_layout_builder_new();
-
-    vkt_pipeline_layout_builder_push_push_constant(&builder, 0, sizeof(VktTrianglePushConstants), VK_SHADER_STAGE_VERTEX_BIT);
-
-    VKT_CHECK(vkt_pipeline_layout_builder_build_layout(&engine->vk_context, &builder, layout));
-    vkt_pipeline_layout_builder_destroy(&builder);
-    return VKT_GENERIC_SUCCESS;
-}
-
-int vkt_create_triangle_pipeline(VktEngine *engine, VkPipelineLayout layout, VkPipeline *pipeline) {
-    VktPipelineBuilder builder = vkt_pipeline_builder_new();
-
-    vkt_pipeline_builder_set_viewport_from_extent(&builder, engine->render_image_extent);
-    vkt_pipeline_builder_set_scissor_from_extent(&builder, engine->render_image_extent);
-
-    vkt_pipeline_builder_push_dynamic_state(&builder, VK_DYNAMIC_STATE_VIEWPORT);
-    vkt_pipeline_builder_push_dynamic_state(&builder, VK_DYNAMIC_STATE_SCISSOR);
-
-    vkt_pipeline_builder_set_pipeline_layout(&builder, layout);
-
-    VkShaderModule vert_module;
-    VKT_CHECK(vkt_load_shader_module_from_file(&engine->vk_context, "resources/shaders/triangle.vert.spv", &vert_module));
-    VkShaderModule frag_module;
-    VKT_CHECK(vkt_load_shader_module_from_file(&engine->vk_context, "resources/shaders/triangle.frag.spv", &frag_module));
-
-    vkt_pipeline_builder_push_shader_stage(&builder, VK_SHADER_STAGE_VERTEX_BIT, vert_module);
-    vkt_pipeline_builder_push_shader_stage(&builder, VK_SHADER_STAGE_FRAGMENT_BIT, frag_module);
-
-    VktVertexInputDescription triangle_input_description = vkt_triangle_mesh_get_input_description();
-    vkt_pipeline_builder_set_vertex_input_state_from_description(&builder, &triangle_input_description);
-
-    vkt_pipeline_builder_set_input_assembly_state(&builder, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-    vkt_pipeline_builder_set_rasterization_state(&builder, VK_POLYGON_MODE_FILL);
-    vkt_pipeline_builder_set_multisampling_state(&builder, VK_SAMPLE_COUNT_1_BIT);
-    vkt_pipeline_builder_set_color_blend_attachment_state(&builder);
-    vkt_pipeline_builder_set_depth_stencil_state(&builder, true, true, VK_COMPARE_OP_LESS_OR_EQUAL);
-
-    int result = vkt_pipeline_builder_build_pipeline(&engine->vk_context, &builder, engine->present_context.main_render_pass, pipeline);
-    vkt_pipeline_builder_destroy(&builder);
-
-    vkt_destroy_shader_module(&engine->vk_context, vert_module);
-    vkt_destroy_shader_module(&engine->vk_context, frag_module);
-
-    vkt_destroy_vertex_input_description(&triangle_input_description);
-
-    return result;
-}
 
 void vkt_on_window_resize(GLFWwindow *window, int width, int height) {
     VktEngine *engine = glfwGetWindowUserPointer(window);
@@ -124,8 +69,12 @@ int main() {
     VkPipeline triangle_pipeline;
     VKT_CHECK(vkt_create_triangle_pipeline(engine, triangle_pipeline_layout, &triangle_pipeline));
 
-    const size_t MAX_FRAMES = 200;
-    size_t frame_counter = 0;
+    const size_t MAX_UPDATE_COUNT = 200;
+    size_t update_counter = 0;
+
+    // Triangle push data
+    VktTrianglePushData triangle_push_data;
+    vkt_init_triangle_push_data(engine, vkt_math_degrees_to_radians(45.f), (vec3) {0.0, 0.0, -3.0}, (vec3) {1.0, 1.0, 1.0}, &triangle_push_data);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -170,53 +119,30 @@ int main() {
                 VkDeviceSize offset = 0;
                 vkCmdBindVertexBuffers(main_command_buffer, 0, 1, &triangle_mesh.vertex_buffer.buffer, &offset);
 
-                // Compute push constants and upload
-                VktTrianglePushConstants push_constants;
+                // Update push data
+                vkt_update_triangle_push_data(engine, update_counter, MAX_UPDATE_COUNT, &triangle_push_data);
 
-                // Projection matrix
-                float fov = 60.0;
-                float aspect = engine->render_image_extent.width / (float)engine->render_image_extent.height;
-                mat4x4 projection; mat4x4_perspective(projection, vkt_math_degrees_to_radians(fov), aspect, 0.1, 100.0);
-
-                // View matrix
-                mat4x4 view; mat4x4_translate(view, 0.0, 0.0, -2.0);
-
-                // Model matrix
-                float progress = frame_counter / (float)MAX_FRAMES;
-                float angle = progress * 2.0 * M_PI;
-                float distance = 0.5f;
-
-                vec3 rotate_axis = { 1.0, 1.0, 1.0 }; vec3_norm(rotate_axis, rotate_axis);
-                quat rotation_quat; quat_rotate(rotation_quat, angle, rotate_axis);
-                mat4x4 rotation_mat; mat4x4_from_quat(rotation_mat, rotation_quat);
-
-                mat4x4 rotation; mat4x4_identity(rotation);
-                mat4x4_mul(rotation, rotation, rotation_mat);
-
-                mat4x4 model; mat4x4_dup(model, rotation);
-
-                // Calculate final matrix and upload
-                mat4x4 view_model; mat4x4_mul(view_model, view, model);
-                mat4x4_mul(push_constants.render_matrix, projection, view_model);
+                VktTrianglePushConstants triangle_push_constants;
+                vkt_calculate_triangle_push_constants(&triangle_push_data, &triangle_push_constants);
 
                 vkCmdPushConstants(
                     main_command_buffer,
-                    triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &push_constants
+                    triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &triangle_push_constants
                 );
 
                 // Finally, draw
                 vkCmdDraw(main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
 
-                // Draw another triangle to test depth
-                mat4x4_translate_in_place(model, 0.0, 0.0, -0.5);
-                mat4x4_identity(view_model); mat4x4_mul(view_model, view, model);
-                mat4x4_mul(push_constants.render_matrix, projection, view_model);
+                // Translate model matrix in place and recalculate push constants
+                mat4x4_translate_in_place(triangle_push_data.model, 0.0, 0.0, -0.5);
+                vkt_calculate_triangle_push_constants(&triangle_push_data, &triangle_push_constants);
 
                 vkCmdPushConstants(
                     main_command_buffer,
-                    triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &push_constants
+                    triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &triangle_push_constants
                 );
 
+                // Draw again
                 vkCmdDraw(main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
             }
             vkt_engine_cmd_end_main_render_pass(engine);
@@ -228,8 +154,8 @@ int main() {
 
         vkt_engine_select_next_frame(engine);
 
-        frame_counter++;
-        frame_counter %= MAX_FRAMES;
+        update_counter++;
+        update_counter %= MAX_UPDATE_COUNT;
     }
 
     // Wait on the present queue before cleaning up (so that all commands are finished)
