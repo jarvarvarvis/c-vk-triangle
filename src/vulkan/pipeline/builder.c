@@ -10,8 +10,8 @@ VktPipelineBuilder vkt_pipeline_builder_new() {
     VktPipelineBuilder builder;
     memset(&builder, 0, sizeof(VktPipelineBuilder));
 
-    VKT_LIST_HELPER_INIT_LIST(VkDynamicState, builder, dynamic_states, 2);
-    VKT_LIST_HELPER_INIT_LIST(VkPipelineShaderStageCreateInfo, builder, shader_stages, 2);
+    VKT_LIST_HELPER_INIT_LIST(builder, VkDynamicState, dynamic_states, 2);
+    VKT_LIST_HELPER_INIT_LIST(builder, VkPipelineShaderStageCreateInfo, shader_stages, 2);
 
     return builder;
 }
@@ -33,7 +33,7 @@ void vkt_pipeline_builder_set_scissor_from_extent(VktPipelineBuilder *builder, V
 }
 
 void vkt_pipeline_builder_push_dynamic_state(VktPipelineBuilder *builder, VkDynamicState dynamic_state) {
-    VKT_LIST_HELPER_PUSH_ELEMENT(VkDynamicState, builder, dynamic_states, 2, dynamic_state);
+    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkDynamicState, dynamic_states, dynamic_state, 2);
 }
 
 void vkt_pipeline_builder_set_pipeline_layout(VktPipelineBuilder *builder, VkPipelineLayout pipeline_layout) {
@@ -52,7 +52,7 @@ void vkt_pipeline_builder_push_shader_stage(VktPipelineBuilder *builder, VkShade
 
     info.pName = "main";
 
-    VKT_LIST_HELPER_PUSH_ELEMENT(VkPipelineShaderStageCreateInfo, builder, shader_stages, 2, info);
+    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkPipelineShaderStageCreateInfo, shader_stages, info, 2);
 }
 
 void vkt_pipeline_builder_set_vertex_input_state(VktPipelineBuilder *builder) {

@@ -17,13 +17,13 @@
     ty *buffer_name; \
     size_t buffer_name##_len, buffer_name##_capacity
 
-#define VKT_LIST_HELPER_INIT_LIST(ty, list, buffer_name, initial_cap) \
+#define VKT_LIST_HELPER_INIT_LIST(list, ty, buffer_name, initial_cap) \
     VKT_LIST_HELPER_CONST_TY_CHECK(ty*, buffer_name, list.buffer_name); \
     list.buffer_name##_len = 0; \
     list.buffer_name##_capacity = initial_cap; \
     list.buffer_name = malloc(sizeof(ty) * list.buffer_name##_capacity);
 
-#define VKT_LIST_HELPER_PUSH_ELEMENT(ty, list_ptr, buffer_name, growth_factor, pushed_elem_name) \
+#define VKT_LIST_HELPER_PUSH_ELEMENT(list_ptr, ty, buffer_name, pushed_elem_name, growth_factor) \
     VKT_LIST_HELPER_CONST_TY_CHECK(ty*, buffer_name, list_ptr->buffer_name); \
     VKT_LIST_HELPER_CONST_TY_CHECK(ty, elem_##buffer_name, pushed_elem_name); \
     if (list_ptr->buffer_name##_len >= list_ptr->buffer_name##_capacity) { \

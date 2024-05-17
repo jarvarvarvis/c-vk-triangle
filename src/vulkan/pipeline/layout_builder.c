@@ -6,12 +6,12 @@
 
 VktPipelineLayoutBuilder vkt_pipeline_layout_builder_new() {
     VktPipelineLayoutBuilder builder;
-    VKT_LIST_HELPER_INIT_LIST(VkPushConstantRange, builder, push_constants, 4);
+    VKT_LIST_HELPER_INIT_LIST(builder, VkPushConstantRange, push_constants, 4);
     return builder;
 }
 
 void vkt_pipeline_layout_builder_push_push_constant_range(VktPipelineLayoutBuilder *builder, VkPushConstantRange range) {
-    VKT_LIST_HELPER_PUSH_ELEMENT(VkPushConstantRange, builder, push_constants, 2, range);
+    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkPushConstantRange, push_constants, range, 2);
 }
 
 void vkt_pipeline_layout_builder_push_push_constant(VktPipelineLayoutBuilder *builder, uint32_t offset, uint32_t size, VkShaderStageFlags shader_stage) {
