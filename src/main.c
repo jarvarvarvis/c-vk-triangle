@@ -97,6 +97,7 @@ int main() {
 
     // Create the vulkan engine
     VktEngineCreateProps engine_props;
+    engine_props.frame_overlap = 2;
     engine_props.swapchain_props.desired_present_mode = VK_PRESENT_MODE_FIFO_KHR;
 
     VktEngine *engine = malloc(sizeof(VktEngine));
@@ -130,6 +131,8 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
+        VktEngineFrameData *frame_data = vkt_engine_current_frame_data(engine);
+
         // Recreate the swapchain at the beginning of the frame, when all fences are reset
         // and all semaphores are unsignaled
         VKT_CHECK(vkt_engine_recreate_swapchain_if_necessary(engine));
@@ -145,6 +148,8 @@ int main() {
 
         VKT_CHECK(vkt_engine_begin_main_command_buffer(engine));
         {
+            VkCommandBuffer main_command_buffer = frame_data->main_command_buffer;
+
             // Create arguments for begin renderpass command
             VktCmdBeginRenderPassArgs renderpass_args = vkt_create_cmd_begin_render_pass_args(swapchain_image_index);
             vkt_set_cmd_begin_render_pass_args_clear_value_color(&renderpass_args, (float[4]) {0.25, 0.15, 0.35, 1.0});
@@ -155,15 +160,15 @@ int main() {
             {
                 // Update viewport and scissor (dynamic state)
                 VkViewport viewport = vkt_vulkan_helper_viewport_from_extent(engine->render_image_extent);
-                vkCmdSetViewport(engine->main_command_buffer, 0, 1, &viewport);
+                vkCmdSetViewport(main_command_buffer, 0, 1, &viewport);
 
                 VkRect2D scissor = vkt_vulkan_helper_rect2d_from_extent(engine->render_image_extent);
-                vkCmdSetScissor(engine->main_command_buffer, 0, 1, &scissor);
+                vkCmdSetScissor(main_command_buffer, 0, 1, &scissor);
 
-                vkCmdBindPipeline(engine->main_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, triangle_pipeline);
+                vkCmdBindPipeline(main_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, triangle_pipeline);
 
                 VkDeviceSize offset = 0;
-                vkCmdBindVertexBuffers(engine->main_command_buffer, 0, 1, &triangle_mesh.vertex_buffer.buffer, &offset);
+                vkCmdBindVertexBuffers(main_command_buffer, 0, 1, &triangle_mesh.vertex_buffer.buffer, &offset);
 
                 // Compute push constants and upload
                 VktTrianglePushConstants push_constants;
@@ -195,12 +200,12 @@ int main() {
                 mat4x4_mul(push_constants.render_matrix, projection, view_model);
 
                 vkCmdPushConstants(
-                    engine->main_command_buffer,
+                    main_command_buffer,
                     triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &push_constants
                 );
 
                 // Finally, draw
-                vkCmdDraw(engine->main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
+                vkCmdDraw(main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
 
                 // Draw another triangle to test depth
                 mat4x4_translate_in_place(model, 0.0, 0.0, -0.5);
@@ -208,11 +213,11 @@ int main() {
                 mat4x4_mul(push_constants.render_matrix, projection, view_model);
 
                 vkCmdPushConstants(
-                    engine->main_command_buffer,
+                    main_command_buffer,
                     triangle_pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(VktTrianglePushConstants), &push_constants
                 );
 
-                vkCmdDraw(engine->main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
+                vkCmdDraw(main_command_buffer, triangle_mesh.vertices_len, 1, 0, 0);
             }
             vkt_engine_cmd_end_main_render_pass(engine);
         }
@@ -220,6 +225,8 @@ int main() {
         VKT_CHECK(vkt_engine_submit_main_command_buffer_to_present_queue(engine));
 
         VKT_CHECK(vkt_engine_present_queue(engine, swapchain_image_index));
+
+        vkt_engine_select_next_frame(engine);
 
         frame_counter++;
         frame_counter %= MAX_FRAMES;

@@ -27,6 +27,8 @@ void vkt_set_cmd_begin_render_pass_args_clear_value_depth_stencil(VktCmdBeginRen
 }
 
 void vkt_engine_cmd_begin_main_render_pass(VktEngine *engine, VktCmdBeginRenderPassArgs args) {
+    VktEngineFrameData *frame_data = vkt_engine_current_frame_data(engine);
+
     VkRenderPassBeginInfo render_pass_info;
 
     render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -65,9 +67,10 @@ void vkt_engine_cmd_begin_main_render_pass(VktEngine *engine, VktCmdBeginRenderP
     render_pass_info.pClearValues = clear_values;
 
     // Begin the render pass
-    vkCmdBeginRenderPass(engine->main_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(frame_data->main_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void vkt_engine_cmd_end_main_render_pass(VktEngine *engine) {
-    vkCmdEndRenderPass(engine->main_command_buffer);
+    VktEngineFrameData *frame_data = vkt_engine_current_frame_data(engine);
+    vkCmdEndRenderPass(frame_data->main_command_buffer);
 }

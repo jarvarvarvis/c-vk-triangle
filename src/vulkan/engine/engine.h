@@ -9,8 +9,16 @@
 #include <stdbool.h>
 
 typedef struct {
+    size_t frame_overlap;
     VktSwapchainCreateProps swapchain_props;
 } VktEngineCreateProps;
+
+typedef struct {
+    VktEngineSyncStructures sync_structures;
+
+    VkCommandPool main_command_pool;
+    VkCommandBuffer main_command_buffer;
+} VktEngineFrameData;
 
 typedef struct {
     VktEngineCreateProps creation_props;
@@ -21,13 +29,20 @@ typedef struct {
     VkExtent2D render_image_extent;
     VktPresentContext present_context;
 
-    VktEngineSyncStructures sync_structures;
-
-    VkCommandPool main_command_pool;
-    VkCommandBuffer main_command_buffer;
+    VktEngineFrameData *frames;
+    size_t frames_count;
+    size_t current_frame_index;
 } VktEngine;
 
+int vkt_create_engine_frame_data(VktEngine *engine, VktEngineFrameData *data);
+
+void vkt_destroy_engine_frame_data(VktEngine *engine, VktEngineFrameData *data);
+
+
 int vkt_create_engine(const char *app_name, GLFWwindow *window, VktEngineCreateProps *props, VktEngine *engine);
+
+VktEngineFrameData *vkt_engine_current_frame_data(VktEngine *engine);
+void vkt_engine_select_next_frame(VktEngine *engine);
 
 int vkt_engine_wait_for_last_frame(VktEngine *engine);
 int vkt_engine_acquire_next_image(VktEngine *engine, uint32_t *image_index);
