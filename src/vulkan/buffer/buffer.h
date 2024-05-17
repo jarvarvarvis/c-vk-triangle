@@ -11,7 +11,20 @@ typedef struct {
     VmaAllocation allocation;
 } VktAllocatedBuffer;
 
-int vkt_allocate_buffer_for_uploads(VktVulkanContext *context, VkBufferUsageFlags usage, size_t size, VktAllocatedBuffer *buffer);
+int vkt_allocate_buffer(
+    VktVulkanContext *context,
+    VkBufferUsageFlags usage,
+    size_t size,
+    VmaMemoryUsage memory_usage,
+    VmaAllocationCreateFlags allocation_flags,
+    VktAllocatedBuffer *buffer
+);
+int vkt_allocate_buffer_for_uploads(
+    VktVulkanContext *context,
+    VkBufferUsageFlags usage,
+    size_t size,
+    VktAllocatedBuffer *buffer
+);
 int vkt_upload_to_buffer(VktVulkanContext *context, VktAllocatedBuffer *buffer, void *data, size_t size);
 void vkt_destroy_buffer(VktVulkanContext *context, VktAllocatedBuffer *buffer);
 
