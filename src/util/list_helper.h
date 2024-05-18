@@ -28,6 +28,7 @@
     VKT_LIST_HELPER_CONST_TY_CHECK(ty, elem_##buffer_name, pushed_elem_name); \
     if (list_ptr->buffer_name##_len >= list_ptr->buffer_name##_capacity) { \
         list_ptr->buffer_name##_capacity *= growth_factor; \
+        list_ptr->buffer_name = realloc(list_ptr->buffer_name, sizeof(ty) * list_ptr->buffer_name##_capacity); \
     } \
     \
     list_ptr->buffer_name[list_ptr->buffer_name##_len] = pushed_elem_name; \

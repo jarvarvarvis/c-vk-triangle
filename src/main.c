@@ -13,6 +13,7 @@
 
 #include "vulkan/pipeline/pipeline.h"
 
+#include "triangle/descriptors.h"
 #include "triangle/mesh.h"
 #include "triangle/pipeline.h"
 #include "triangle/push_constants.h"
@@ -63,16 +64,25 @@ int main() {
     VktTriangleMesh triangle_mesh;
     VKT_CHECK(vkt_create_triangle_mesh(engine, &triangle_mesh));
 
+    // Create triangle descriptors, one descriptor set for each frame
+    VktTriangleDescriptors triangle_descriptors;
+    VKT_CHECK(vkt_create_triangle_descriptors(engine, engine_props.frame_overlap, &triangle_descriptors));
+
     // Create pipeline layout and pipeline
     VkPipelineLayout triangle_pipeline_layout;
-    VKT_CHECK(vkt_create_triangle_pipeline_layout(engine, &triangle_pipeline_layout));
+
+    VktTrianglePipelineLayoutArgs triangle_pipeline_args;
+    triangle_pipeline_args.descriptor_set_layout = triangle_descriptors.set_layout;
+    VKT_CHECK(vkt_create_triangle_pipeline_layout(engine, &triangle_pipeline_args, &triangle_pipeline_layout));
+
     VkPipeline triangle_pipeline;
     VKT_CHECK(vkt_create_triangle_pipeline(engine, triangle_pipeline_layout, &triangle_pipeline));
 
+    // Counters for update logic
     const size_t MAX_UPDATE_COUNT = 200;
     size_t update_counter = 0;
 
-    // Triangle push data
+    // Create triangle push constant data
     VktTrianglePushData triangle_push_data;
     vkt_init_triangle_push_data(engine, vkt_math_degrees_to_radians(45.f), (vec3) {0.0, 0.0, -3.0}, (vec3) {1.0, 1.0, 1.0}, &triangle_push_data);
 
@@ -119,6 +129,14 @@ int main() {
                 VkDeviceSize offset = 0;
                 vkCmdBindVertexBuffers(main_command_buffer, 0, 1, &triangle_mesh.vertex_buffer.buffer, &offset);
 
+                // For the current frame: Upload descriptor data to the buffer and bind the descriptor set
+                VktTriangleGlobalUniformData uniform_data;
+                mat4x4_identity(uniform_data.mvp);
+                mat4x4_translate(uniform_data.mvp, 0.0, 1.0, 0.0);
+
+                vkt_triangle_descriptors_upload_global_data(engine, &triangle_descriptors, engine->current_frame_index, &uniform_data);
+                vkt_triangle_descriptors_bind_set(engine, triangle_pipeline_layout, &triangle_descriptors, engine->current_frame_index);
+
                 // Update push data
                 vkt_update_triangle_push_data(engine, update_counter, MAX_UPDATE_COUNT, &triangle_push_data);
 
@@ -162,7 +180,9 @@ int main() {
     VKT_CHECK(vkt_engine_wait_on_present_queue(engine));
 
     // Clean up
+    vkt_destroy_triangle_descriptors(engine, &triangle_descriptors);
     vkt_destroy_triangle_mesh(engine, &triangle_mesh);
+
     vkt_destroy_pipeline(&engine->vk_context, triangle_pipeline);
     vkt_destroy_pipeline_layout(&engine->vk_context, triangle_pipeline_layout);
 

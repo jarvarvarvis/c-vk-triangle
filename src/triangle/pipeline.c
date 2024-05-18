@@ -11,13 +11,19 @@
 
 #include "../vulkan/common.h"
 
-int vkt_create_triangle_pipeline_layout(VktEngine *engine, VkPipelineLayout *layout) {
+int vkt_create_triangle_pipeline_layout(VktEngine *engine, VktTrianglePipelineLayoutArgs *args, VkPipelineLayout *layout) {
     VktPipelineLayoutBuilder builder = vkt_pipeline_layout_builder_new();
 
     vkt_pipeline_layout_builder_push_push_constant(&builder, 0, sizeof(VktTrianglePushConstants), VK_SHADER_STAGE_VERTEX_BIT);
 
+    // Use descriptor set if it was supplied in the arguments
+    if (args->descriptor_set_layout != NULL) {
+        vkt_pipeline_layout_builder_push_descriptor_set_layout(&builder, args->descriptor_set_layout);
+    }
+
     VKT_CHECK(vkt_pipeline_layout_builder_build_layout(&engine->vk_context, &builder, layout));
     vkt_pipeline_layout_builder_destroy(&builder);
+
     return VKT_GENERIC_SUCCESS;
 }
 
