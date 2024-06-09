@@ -16,7 +16,7 @@ find_package(Vulkan REQUIRED)
 set(VMA_PROJ_PATH ${CMAKE_SOURCE_DIR}/thirdparty/VulkanMemoryAllocator)
 set(VMA_INCLUDE_DIRS ${VMA_PROJ_PATH}/include)
 
-set(VMA_IMPL_FILE ${CMAKE_SOURCE_DIR}/src/lib/vma/impl.cpp)
+set(VMA_IMPL_FILE ${CMAKE_SOURCE_DIR}/src/lib/vma_impl.cpp)
 
 # GLFW
 set(GLFW_PROJ_PATH ${CMAKE_SOURCE_DIR}/thirdparty/glfw)
