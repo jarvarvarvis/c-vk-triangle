@@ -1,13 +1,13 @@
 #ifndef VKT_VULKAN_PIPELINE_LAYOUT_BUILDER_H
 #define VKT_VULKAN_PIPELINE_LAYOUT_BUILDER_H
 
-#include "../../util/list_helper.h"
+#include <c_utils_collection/datatypes/list_helper.h> 
 
 #include "../context/context.h"
 
 typedef struct {
-    VKT_LIST_HELPER_STRUCT_MEMBERS(VkPushConstantRange, push_constants);
-    VKT_LIST_HELPER_STRUCT_MEMBERS(VkDescriptorSetLayout, descriptor_set_layouts);
+    LIST_HELPER_STRUCT_MEMBERS(VkPushConstantRange, push_constants);
+    LIST_HELPER_STRUCT_MEMBERS(VkDescriptorSetLayout, descriptor_set_layouts);
 } VktPipelineLayoutBuilder;
 
 VktPipelineLayoutBuilder vkt_pipeline_layout_builder_new();

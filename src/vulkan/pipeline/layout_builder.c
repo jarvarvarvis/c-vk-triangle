@@ -6,13 +6,13 @@
 
 VktPipelineLayoutBuilder vkt_pipeline_layout_builder_new() {
     VktPipelineLayoutBuilder builder;
-    VKT_LIST_HELPER_INIT_LIST(builder, VkPushConstantRange, push_constants, 4);
-    VKT_LIST_HELPER_INIT_LIST(builder, VkDescriptorSetLayout, descriptor_set_layouts, 4);
+    LIST_HELPER_INIT_LIST(builder, VkPushConstantRange, push_constants, 4);
+    LIST_HELPER_INIT_LIST(builder, VkDescriptorSetLayout, descriptor_set_layouts, 4);
     return builder;
 }
 
 void vkt_pipeline_layout_builder_push_push_constant_range(VktPipelineLayoutBuilder *builder, VkPushConstantRange range) {
-    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkPushConstantRange, push_constants, range, 2);
+    LIST_HELPER_PUSH_ELEMENT(builder, VkPushConstantRange, push_constants, range, 2);
 }
 
 void vkt_pipeline_layout_builder_push_push_constant(VktPipelineLayoutBuilder *builder, uint32_t offset, uint32_t size, VkShaderStageFlags shader_stage) {
@@ -25,7 +25,7 @@ void vkt_pipeline_layout_builder_push_push_constant(VktPipelineLayoutBuilder *bu
 }
 
 void vkt_pipeline_layout_builder_push_descriptor_set_layout(VktPipelineLayoutBuilder *builder, VkDescriptorSetLayout layout) {
-    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkDescriptorSetLayout, descriptor_set_layouts, layout, 2);
+    LIST_HELPER_PUSH_ELEMENT(builder, VkDescriptorSetLayout, descriptor_set_layouts, layout, 2);
 }
 
 int vkt_pipeline_layout_builder_build_layout(VktVulkanContext *context, VktPipelineLayoutBuilder *builder, VkPipelineLayout *layout) {

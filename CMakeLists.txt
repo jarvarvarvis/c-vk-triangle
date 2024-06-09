@@ -12,14 +12,17 @@ endif()
 # Find base dependencies (Vulkan)
 find_package(Vulkan REQUIRED)
 
+# Set thirdparty directory
+set(THIRDPARTY_DIR ${CMAKE_SOURCE_DIR}/thirdparty)
+
 # VulkanMemoryAllocator
-set(VMA_PROJ_PATH ${CMAKE_SOURCE_DIR}/thirdparty/VulkanMemoryAllocator)
+set(VMA_PROJ_PATH ${THIRDPARTY_DIR}/VulkanMemoryAllocator)
 set(VMA_INCLUDE_DIRS ${VMA_PROJ_PATH}/include)
 
 set(VMA_IMPL_FILE ${CMAKE_SOURCE_DIR}/src/lib/vma_impl.cpp)
 
 # GLFW
-set(GLFW_PROJ_PATH ${CMAKE_SOURCE_DIR}/thirdparty/glfw)
+set(GLFW_PROJ_PATH ${THIRDPARTY_DIR}/glfw)
 
 # Set options for glfw building (build as shared library, disable all stuff not
 # strictly necessary for integration)
@@ -38,7 +41,7 @@ set(INCLUDE_DIRS ${INCLUDE_DIRS}
     ${VULKAN_INCLUDE_DIRS}
     ${VMA_INCLUDE_DIRS}
     ${GLFW_INCLUDE_DIRS}
-    ${CMAKE_SOURCE_DIR}/thirdparty
+    ${THIRDPARTY_DIR}
 )
 message("Include directories: ${INCLUDE_DIRS}")
 include_directories(${INCLUDE_DIRS})
@@ -46,8 +49,23 @@ include_directories(${INCLUDE_DIRS})
 # Source files
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.c)
 
+# Add thirdparty dependency sources (ignore specific stuff like unit tests)
+file(GLOB_RECURSE RAW_C_UTILS_COLLECTION_SOURCES ${THIRDPARTY_DIR}/c_utils_collection/*.c)
+set(C_UTILS_COLLECTION_SOURCES)
+message(STATUS "Filtered c_utils_collection sources (excluding tests):")
+foreach (SOURCE ${RAW_C_UTILS_COLLECTION_SOURCES})
+    if (NOT SOURCE MATCHES "tests/")
+        message("* ${SOURCE}")
+        list(APPEND C_UTILS_COLLECTION_SOURCES ${SOURCE})
+    endif()
+endforeach()
+
 # Add the project executable
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${VMA_IMPL_FILE})
+add_executable(${PROJECT_NAME}
+    ${SOURCE_FILES}
+    ${VMA_IMPL_FILE}
+    # Build c_utils_collection as part of the executable
+    ${C_UTILS_COLLECTION_SOURCES})
 
 # Compile definitions
 target_compile_definitions(${PROJECT_NAME} PUBLIC

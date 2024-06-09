@@ -1,15 +1,15 @@
 #ifndef VKT_VULKAN_DESCRIPTORS_UPDATE_BUILDER_H
 #define VKT_VULKAN_DESCRIPTORS_UPDATE_BUILDER_H
 
-#include "../../util/list_helper.h"
+#include <c_utils_collection/datatypes/list_helper.h> 
 
 #include "../context/context.h"
 
 typedef struct {
-    VKT_LIST_HELPER_STRUCT_MEMBERS(VkDescriptorBufferInfo, buffer_infos);
-    VKT_LIST_HELPER_STRUCT_MEMBERS(VkWriteDescriptorSet, set_writes);
+    LIST_HELPER_STRUCT_MEMBERS(VkDescriptorBufferInfo, buffer_infos);
+    LIST_HELPER_STRUCT_MEMBERS(VkWriteDescriptorSet, set_writes);
 
-    VKT_LIST_HELPER_STRUCT_MEMBERS(VkCopyDescriptorSet, set_copies);
+    LIST_HELPER_STRUCT_MEMBERS(VkCopyDescriptorSet, set_copies);
 } VktDescriptorSetUpdateBuilder;
 
 VktDescriptorSetUpdateBuilder vkt_descriptor_set_update_builder_new();

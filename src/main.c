@@ -3,7 +3,7 @@
 
 #include <unistd.h>
 
-#include "util/math.h"
+#include <c_utils_collection/math.h>
 
 #include "vulkan/common.h"
 #include "vulkan/helper.h"
@@ -84,7 +84,7 @@ int main() {
 
     // Create triangle push constant data
     VktTrianglePushData triangle_push_data;
-    vkt_init_triangle_push_data(engine, vkt_math_degrees_to_radians(45.f), (vec3) {0.0, 0.0, -3.0}, (vec3) {1.0, 1.0, 1.0}, &triangle_push_data);
+    vkt_init_triangle_push_data(engine, math_flt_degrees_to_radians(45.f), (vec3) {0.0, 0.0, -3.0}, (vec3) {1.0, 1.0, 1.0}, &triangle_push_data);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {

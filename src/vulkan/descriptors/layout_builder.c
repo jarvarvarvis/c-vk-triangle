@@ -4,12 +4,12 @@
 
 VktDescriptorSetLayoutBuilder vkt_descriptor_set_layout_builder_new() {
     VktDescriptorSetLayoutBuilder builder;
-    VKT_LIST_HELPER_INIT_LIST(builder, VkDescriptorSetLayoutBinding, bindings, 4);
+    LIST_HELPER_INIT_LIST(builder, VkDescriptorSetLayoutBinding, bindings, 4);
     return builder;
 }
 
 void vkt_descriptor_set_layout_builder_push_layout_binding(VktDescriptorSetLayoutBuilder *builder, VkDescriptorSetLayoutBinding binding) {
-    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkDescriptorSetLayoutBinding, bindings, binding, 2);
+    LIST_HELPER_PUSH_ELEMENT(builder, VkDescriptorSetLayoutBinding, bindings, binding, 2);
 }
 
 void vkt_descriptor_set_layout_builder_push_uniform_buffer_binding(VktDescriptorSetLayoutBuilder *builder, uint32_t binding_index, VkShaderStageFlags shader_stage) {

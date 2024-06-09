@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "../../util/list_helper.h"
+#include <c_utils_collection/datatypes/list_helper.h> 
 
 #include "../context/context.h"
 
@@ -13,11 +13,11 @@ typedef struct {
     VkViewport viewport;
     VkRect2D scissor;
 
-    VKT_LIST_HELPER_STRUCT_MEMBERS(VkDynamicState, dynamic_states);
+    LIST_HELPER_STRUCT_MEMBERS(VkDynamicState, dynamic_states);
 
     VkPipelineLayout pipeline_layout;
 
-    VKT_LIST_HELPER_STRUCT_MEMBERS(VkPipelineShaderStageCreateInfo, shader_stages);
+    LIST_HELPER_STRUCT_MEMBERS(VkPipelineShaderStageCreateInfo, shader_stages);
 
     VkPipelineVertexInputStateCreateInfo vertex_input_state;
     VkPipelineInputAssemblyStateCreateInfo input_assembly_state;

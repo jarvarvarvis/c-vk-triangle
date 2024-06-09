@@ -6,7 +6,7 @@
 
 #include "../common.h"
 
-#include "../../util/string_list.h"
+#include <c_utils_collection/datatypes/string_list.h> 
 
 #include <stdint.h>
 

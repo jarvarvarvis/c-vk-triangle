@@ -1,12 +1,12 @@
 #ifndef VKT_VULKAN_DESCRIPTORS_LAYOUT_BUILDER_H
 #define VKT_VULKAN_DESCRIPTORS_LAYOUT_BUILDER_H
 
-#include "../../util/list_helper.h"
+#include <c_utils_collection/datatypes/list_helper.h> 
 
 #include "../context/context.h"
 
 typedef struct {
-    VKT_LIST_HELPER_STRUCT_MEMBERS(VkDescriptorSetLayoutBinding, bindings);
+    LIST_HELPER_STRUCT_MEMBERS(VkDescriptorSetLayoutBinding, bindings);
 } VktDescriptorSetLayoutBuilder;
 
 VktDescriptorSetLayoutBuilder vkt_descriptor_set_layout_builder_new();

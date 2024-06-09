@@ -6,15 +6,15 @@
 
 VktDescriptorSetUpdateBuilder vkt_descriptor_set_update_builder_new() {
     VktDescriptorSetUpdateBuilder builder;
-    VKT_LIST_HELPER_INIT_LIST(builder, VkDescriptorBufferInfo, buffer_infos, 4);
-    VKT_LIST_HELPER_INIT_LIST(builder, VkWriteDescriptorSet, set_writes, 4);
+    LIST_HELPER_INIT_LIST(builder, VkDescriptorBufferInfo, buffer_infos, 4);
+    LIST_HELPER_INIT_LIST(builder, VkWriteDescriptorSet, set_writes, 4);
 
-    VKT_LIST_HELPER_INIT_LIST(builder, VkCopyDescriptorSet, set_copies, 4);
+    LIST_HELPER_INIT_LIST(builder, VkCopyDescriptorSet, set_copies, 4);
     return builder;
 }
 
 void vkt_descriptor_set_update_builder_push_write(VktDescriptorSetUpdateBuilder *builder, VkWriteDescriptorSet write) {
-    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkWriteDescriptorSet, set_writes, write, 2);
+    LIST_HELPER_PUSH_ELEMENT(builder, VkWriteDescriptorSet, set_writes, write, 2);
 }
 
 void vkt_descriptor_set_update_builder_push_buffer_write(VktDescriptorSetUpdateBuilder *builder, VkBuffer buffer, VkDeviceSize buffer_size, VkDescriptorSet set, uint32_t binding, VkDescriptorType descriptor_type) {
@@ -24,7 +24,7 @@ void vkt_descriptor_set_update_builder_push_buffer_write(VktDescriptorSetUpdateB
     buffer_info.offset = 0;
     buffer_info.range = buffer_size;
 
-    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkDescriptorBufferInfo, buffer_infos, buffer_info, 2);
+    LIST_HELPER_PUSH_ELEMENT(builder, VkDescriptorBufferInfo, buffer_infos, buffer_info, 2);
 
     // Set up information on how the descriptor set is updated
     VkWriteDescriptorSet write;
@@ -44,7 +44,7 @@ void vkt_descriptor_set_update_builder_push_buffer_write(VktDescriptorSetUpdateB
 }
 
 void vkt_descriptor_set_update_builder_push_copy(VktDescriptorSetUpdateBuilder *builder, VkCopyDescriptorSet copy) {
-    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkCopyDescriptorSet, set_copies, copy, 2);
+    LIST_HELPER_PUSH_ELEMENT(builder, VkCopyDescriptorSet, set_copies, copy, 2);
 }
 
 void vkt_descriptor_set_update_builder_update_sets(VktVulkanContext *context, VktDescriptorSetUpdateBuilder *builder) {

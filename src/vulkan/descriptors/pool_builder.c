@@ -4,7 +4,7 @@
 
 VktDescriptorPoolBuilder vkt_descriptor_pool_builder_new() {
     VktDescriptorPoolBuilder builder;
-    VKT_LIST_HELPER_INIT_LIST(builder, VkDescriptorPoolSize, sizes, 4);
+    LIST_HELPER_INIT_LIST(builder, VkDescriptorPoolSize, sizes, 4);
     builder.max_sets_count = 0;
     return builder;
 }
@@ -13,7 +13,7 @@ void vkt_descriptor_pool_builder_push_size(VktDescriptorPoolBuilder *builder, Vk
     VkDescriptorPoolSize pool_size;
     pool_size.type = type;
     pool_size.descriptorCount = count;
-    VKT_LIST_HELPER_PUSH_ELEMENT(builder, VkDescriptorPoolSize, sizes, pool_size, 2);
+    LIST_HELPER_PUSH_ELEMENT(builder, VkDescriptorPoolSize, sizes, pool_size, 2);
 
     builder->max_sets_count += count;
 }
